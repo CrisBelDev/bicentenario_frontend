@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 
 const ConfirmarCuenta = () => {
 	const [mensaje, setMensaje] = useState(
@@ -14,7 +14,10 @@ const ConfirmarCuenta = () => {
 		if (token) {
 			const confirmarCuenta = async () => {
 				try {
-					const respuesta = await fetch("http://localhost:5000/confirmar", {
+					const API_URL =
+						import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
+					const respuesta = await fetch(`${API_URL}/confirmar`, {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ token }),
