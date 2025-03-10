@@ -1,0 +1,4 @@
+/* styles.css o cualquier archivo CSS global que estés utilizando */
+.nav-link:hover {
+	color: #ed502e !important;
+}

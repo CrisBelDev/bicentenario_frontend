@@ -1,0 +1,10 @@
+body {
+	background-color: #ccc;
+}
+
+.colorear {
+	background-color: rgb(207, 228, 202);
+}
+.tarjeta {
+	background-color: rgba(248, 120, 0, 0.692);
+}
