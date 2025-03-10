@@ -14,15 +14,7 @@ Asegúrate de tener instalado en tu máquina:
 
 ### Instrucciones para ejecutar el proyecto
 
-1. **Clonar el repositorio**
-
-   Primero, clona el repositorio en tu máquina local:
-
-   ```bash
-   git clone https://github.com/tu-usuario/tu-repo.git
-   ```
-
-2. **Instalar dependencias**
+1. **Instalar dependencias**
 
    Una vez clonado el proyecto, navega al directorio del proyecto y ejecuta el siguiente comando para instalar las dependencias:
 
@@ -38,7 +30,7 @@ Asegúrate de tener instalado en tu máquina:
    yarn install
    ```
 
-3. **Configurar las variables de entorno**
+2. **Configurar las variables de entorno**
 
    En la raíz del proyecto encontrarás un archivo llamado `.env.example`. Copia este archivo y renómbralo a `.env`:
 
@@ -53,7 +45,7 @@ Asegúrate de tener instalado en tu máquina:
    VITE_RECAPTCHA_SITE_KEY=your-site-key-here
    ```
 
-4. **Ejecutar el proyecto**
+3. **Ejecutar el proyecto**
 
    Después de configurar las variables de entorno, puedes iniciar el servidor de desarrollo ejecutando:
 
