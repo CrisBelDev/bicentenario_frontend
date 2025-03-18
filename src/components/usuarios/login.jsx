@@ -61,7 +61,7 @@ function Login() {
 				password: usuario.password,
 				captcha: captchaValue,
 			});
-
+			// ========================= para crear la sesion========================
 			// Si el login es exitoso, almacenar el token y los datos en localStorage
 			if (respuesta.data.token) {
 				localStorage.setItem("tokenLogin", respuesta.data.token);
@@ -75,16 +75,27 @@ function Login() {
 
 				navigate("/"); // Redirigir a la página de inicio
 			}
+			// =======================================================================
 		} catch (error) {
-			// Verificar si la cuenta está verificada
-			if (!error.response.data.verificado) {
-				//console.log("Cuenta no verificada. Redirigiendo a confirmar cuenta.");
+			console.log(error.response.data);
+
+			// Si la cuenta no está verificada
+			if (error.response?.data?.verificado === false) {
+				setErrorGeneral(
+					"Tu cuenta no está verificada. Por favor, verifica tu cuenta."
+				);
 				navigate("/confirmarcuenta");
-				return; // Detener la ejecución posterior para evitar que se ejecute el login si no está verificado
+				return; // Detener la ejecución posterior
 			}
 
-			setErrorGeneral("Acceso inválido. Por favor, inténtelo otra vez.");
-			//console.log("aqui entramos",error.response ? error.response.data : error);
+			// Si la contraseña es incorrecta
+			if (error.response?.data?.message === "Contraseña incorrecta") {
+				setErrorGeneral(
+					"La contraseña ingresada es incorrecta. Intenta nuevamente."
+				);
+			} else {
+				setErrorGeneral("Acceso inválido. Por favor, inténtelo otra vez.");
+			}
 		}
 	};
 

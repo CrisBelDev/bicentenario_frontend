@@ -1,7 +1,10 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useEffect } from "react";
+import Select from "react-select";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link } from "react-router-dom";
+import usuariosAxios from "../../config/axios";
+
 const estadoInicial = {
 	nombre: "",
 	apellido: "",
@@ -22,13 +25,49 @@ const reductor = (estado, accion) => ({
 const FormularioUsuario = ({ onSubmit }) => {
 	const [usuario, dispatch] = useReducer(reductor, estadoInicial);
 	const [captchaValue, setCaptchaValue] = useState(null);
-	const [confirmTouched, setConfirmTouched] = useState(false);
+	const [paises, setPaises] = useState([]);
+	const [ciudades, setCiudades] = useState([]);
+
+	useEffect(() => {
+		const obtenerPaises = async () => {
+			try {
+				const { data } = await usuariosAxios.get("/pais");
+				setPaises(
+					data.map((pais) => ({
+						value: pais.id_pais,
+						label: pais.nombre,
+					}))
+				);
+			} catch (error) {
+				console.error("Error al obtener los países", error);
+			}
+		};
+		obtenerPaises();
+	}, []);
+
+	useEffect(() => {
+		const obtenerCiudades = async () => {
+			if (usuario.pais) {
+				try {
+					const { data } = await usuariosAxios.get(`/ciudades/${usuario.pais}`);
+					setCiudades(
+						data.map((ciudad) => ({
+							value: ciudad.id_ciudad,
+							label: ciudad.nombre,
+						}))
+					);
+				} catch (error) {
+					console.error("Error al obtener las ciudades", error);
+				}
+			}
+		};
+		obtenerCiudades();
+	}, [usuario.pais]);
 
 	const manejarCambio = (e) => {
-		dispatch({ name: e.target.name, value: e.target.value });
+		const { name, value } = e.target;
+		dispatch({ name, value });
 	};
-
-	const manejarBlurConfirmar = () => setConfirmTouched(true);
 
 	const manejarCambioCaptcha = (value) => setCaptchaValue(value);
 
@@ -37,7 +76,9 @@ const FormularioUsuario = ({ onSubmit }) => {
 
 	const validarUsuario = () => {
 		return (
-			Object.values(usuario).every((campo) => campo.trim() !== "") &&
+			Object.values(usuario).every((campo) =>
+				campo ? String(campo).trim() !== "" : false
+			) &&
 			validarContraseñas() &&
 			captchaValue
 		);
@@ -111,6 +152,7 @@ const FormularioUsuario = ({ onSubmit }) => {
 						placeholder="Ingresa tu contraseña"
 						value={usuario.password}
 						onChange={manejarCambio}
+						autoComplete="new-password"
 					/>
 				</div>
 
@@ -125,15 +167,17 @@ const FormularioUsuario = ({ onSubmit }) => {
 						placeholder="Confirma tu contraseña"
 						value={usuario.confirmarPassword}
 						onChange={manejarCambio}
-						onBlur={manejarBlurConfirmar}
+						autoComplete="new-password"
 					/>
 				</div>
 
-				{confirmTouched && !validarContraseñas() && (
-					<div className="alert alert-danger">
-						Las contraseñas no coinciden.
-					</div>
-				)}
+				{usuario.password &&
+					usuario.confirmarPassword &&
+					!validarContraseñas() && (
+						<div className="alert alert-danger">
+							Las contraseñas no coinciden.
+						</div>
+					)}
 
 				<div className="mb-3 col-md-12">
 					<label>
@@ -149,31 +193,36 @@ const FormularioUsuario = ({ onSubmit }) => {
 					/>
 				</div>
 
-				<div className="mb-3 col-md-12">
+				<div className="mb-3 col-md-6">
 					<label>
 						País<span className="text-danger">*</span>
 					</label>
-					<input
-						type="text"
+					<Select
 						name="pais"
-						className="form-control"
-						placeholder="Ingresa tu país"
-						value={usuario.pais}
-						onChange={manejarCambio}
+						options={paises}
+						value={paises.find((pais) => pais.value === usuario.pais) || null}
+						onChange={(e) =>
+							manejarCambio({ target: { name: "pais", value: e.value } })
+						}
+						placeholder="Selecciona un país"
 					/>
 				</div>
 
-				<div className="mb-3 col-md-12">
+				<div className="mb-3 col-md-6">
 					<label>
 						Ciudad<span className="text-danger">*</span>
 					</label>
-					<input
-						type="text"
+					<Select
 						name="ciudad"
-						className="form-control"
-						placeholder="Ingresa tu ciudad"
-						value={usuario.ciudad}
-						onChange={manejarCambio}
+						options={ciudades}
+						value={
+							ciudades.find((ciudad) => ciudad.value === usuario.ciudad) || null
+						}
+						onChange={(e) =>
+							manejarCambio({ target: { name: "ciudad", value: e.value } })
+						}
+						isDisabled={!usuario.pais}
+						placeholder="Selecciona una ciudad"
 					/>
 				</div>
 
@@ -181,17 +230,19 @@ const FormularioUsuario = ({ onSubmit }) => {
 					<label>
 						Género<span className="text-danger">*</span>
 					</label>
-					<select
-						className="form-select"
+					<Select
 						name="genero"
-						value={usuario.genero}
-						onChange={manejarCambio}
-					>
-						<option value="">Selecciona una opción</option>
-						<option value="masculino">Masculino</option>
-						<option value="femenino">Femenino</option>
-						<option value="otro">Otro</option>
-					</select>
+						options={[
+							{ value: "masculino", label: "Masculino" },
+							{ value: "femenino", label: "Femenino" },
+							{ value: "otro", label: "Otro" },
+						]}
+						value={{ value: usuario.genero, label: usuario.genero }}
+						onChange={(e) =>
+							manejarCambio({ target: { name: "genero", value: e.value } })
+						}
+						placeholder="Selecciona una opción"
+					/>
 				</div>
 
 				<div className="mb-3 col-md-12">

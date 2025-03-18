@@ -1,4 +1,71 @@
 /* styles.css o cualquier archivo CSS global que estés utilizando */
-.nav-link:hover {
-	color: #ed502e !important;
+
+.titulo-banner {
+	color: #f7f7f7; /* Color del texto */
+	font-size: 6rem; /* Tamaño de la fuente */
+	font-weight: bold; /* Negrita */
+	text-transform: uppercase; /* Transformar a mayúsculas */
+	text-shadow: 2px 12px 8px rgba(0, 0, 0, 0.7); /* Sombra para resaltar el texto */
+	letter-spacing: 2px; /* Espaciado entre letras */
+	line-height: 1.2; /* Espaciado entre líneas */
+	padding: 0.5rem; /* Espaciado interno alrededor del texto */
+	z-index: 2; /* Asegura que el texto esté encima de la capa opaca */
+}
+
+.color-menu h1 {
+	color: #ffcc00;
+}
+/* .navbar-border {
+	position: sticky;
+	top: 60px; 
+	z-index: 1020; 
+	width: 100%;
+	height: 5px;
+	background: linear-gradient(to right, #d52b1e, #ffcc00, #007a33);
+} */
+
+.fa-bars {
+	color: white;
+	font-size: 35px;
+}
+.navbar-border {
+	position: fixed;
+	left: 0;
+	width: 100%;
+	height: 5px;
+	background: linear-gradient(to right, #d52b1e, #ffcc00, #007a33);
+	z-index: 999;
+}
+.color-menu {
+	background-color: #003366; /* Azul oscuro o el color que prefieras */
+	padding: 10px 0;
+}
+
+.color-menu .nav-link {
+	color: white !important; /* Letras en blanco */
+	font-weight: bold;
+	transition: color 0.3s ease-in-out;
+}
+
+.color-menu .nav-link:hover {
+	color: #ffcc00 !important; /* Amarillo al pasar el mouse */
+}
+
+.color-menu .navbar-toggler {
+	border-color: white; /* Bordes blancos en el botón del menú móvil */
+}
+
+.color-menu .navbar-toggler-icon {
+	background-color: white; /* Ícono del menú en blanco */
+}
+
+.navbar-toggler {
+	border: none !important; /* Elimina el borde si no quieres que se vea */
+}
+
+.navbar-toggler-icon {
+	filter: invert(1); /* Hace que el ícono sea blanco en fondos oscuros */
+}
+.navbar-toggler-icon {
+	filter: invert(0); /* Mantiene el ícono oscuro */
 }

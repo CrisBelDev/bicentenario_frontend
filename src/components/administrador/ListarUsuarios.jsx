@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import usuariosAxios from "../../config/axios";
 
-function Usuarios() {
+function ListarUsuarios() {
 	// State para los usuarios
 	const [usuarios, guardarUsuarios] = useState([]);
 
@@ -127,4 +127,4 @@ function Usuarios() {
 	);
 }
 
-export default Usuarios;
+export default ListarUsuarios;
