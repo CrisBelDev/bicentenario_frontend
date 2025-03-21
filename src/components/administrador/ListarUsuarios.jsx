@@ -1,25 +1,59 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import usuariosAxios from "../../config/axios";
+import usuariosAxios from "../../config/axios"; // Asegúrate de tener correctamente configurada esta instancia
 
 function ListarUsuarios() {
-	// State para los usuarios
+	// Estado para los usuarios
 	const [usuarios, guardarUsuarios] = useState([]);
-
-	//State para Datatables
 	const [busqueda, setBusqueda] = useState(""); // Estado para la búsqueda
 	const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
+	const [cargando, setCargando] = useState(false); // Estado para la carga
+
+	const token = localStorage.getItem("tokenLogin");
+
+	// Usamos useNavigate
+	const navigate = useNavigate();
+
+	// Si no hay token, redirigimos al usuario al inicio
+	if (!token) {
+		navigate("/"); // Redirige al home si no hay token
+		return;
+	}
 
 	// Consultar API
 	useEffect(() => {
 		const consultarApi = async () => {
-			const { data } = await usuariosAxios.get("/usuarios");
-			guardarUsuarios(data);
-			setUsuariosFiltrados(data);
+			setCargando(true); // Inicia carga
+			try {
+				const { data } = await usuariosAxios.get("/usuarios", {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+				console.log(data);
+				guardarUsuarios(data);
+				setUsuariosFiltrados(data);
+			} catch (error) {
+				console.log(error.response);
+
+				// Capturamos el error de expiración del token enviado por el backend
+				if (error.response.data.message.includes("Token invalido o expirado")) {
+					localStorage.removeItem("tokenLogin");
+					// Solo muestra una alerta y redirige al home
+					alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+					navigate("/"); // Redirigir al home
+					return; // Terminamos la ejecución aquí
+				}
+
+				console.error("Error al obtener los usuarios:", error);
+			} finally {
+				setCargando(false); // Termina carga
+			}
 		};
+
 		consultarApi();
-	}, []);
+	}, [token, navigate]); // Dependencia en token
 
 	// Función para filtrar usuarios
 	const handleBusqueda = (e) => {
@@ -61,7 +95,6 @@ function ListarUsuarios() {
 				</div>
 			),
 			ignoreRowClick: true,
-			// Eliminamos allowOverflow y button para evitar warnings
 		},
 	];
 
