@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import usuariosAxios from "../../config/axios"; // Cliente Axios configurado
 import { validarSesion } from "../../utils/ValidarSesion";
+import ReactQuill, { Quill } from "react-quill-new"; // Asegúrate de tener Quill importado
+import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
 
 const CrearEvento = () => {
 	const [formData, setFormData] = useState({
@@ -32,6 +34,27 @@ const CrearEvento = () => {
 			...prevData,
 			[name]: type === "file" ? files[0] : value, // Manejar imágenes si es el caso
 		}));
+	};
+
+	// Manejar cambios en la descripción con ReactQuill
+	const handleDescripcionChange = (value) => {
+		setFormData((prevData) => ({
+			...prevData,
+			descripcion: value,
+		}));
+	};
+
+	// Configuración de la barra de herramientas para ReactQuill
+	const modules = {
+		toolbar: [
+			[{ header: "3" }],
+			[{ list: "bullet" }],
+			["bold", "italic", "underline", "strike"],
+			[{ color: [] }],
+			["link"],
+
+			["clean"],
+		],
 	};
 
 	// Enviar formulario
@@ -92,7 +115,11 @@ const CrearEvento = () => {
 						{/* Campos de formulario */}
 						{[
 							{ label: "Título", name: "titulo", type: "text" },
-							{ label: "Descripción", name: "descripcion", type: "textarea" },
+							{
+								label: "Descripción",
+								name: "descripcion",
+								type: "react-quill",
+							},
 							{
 								label: "Fecha Inicio",
 								name: "fecha_inicio",
@@ -104,7 +131,15 @@ const CrearEvento = () => {
 						].map((field) => (
 							<div className="mb-3" key={field.name}>
 								<label className="form-label">{field.label}</label>
-								{field.type === "textarea" ? (
+								{field.type === "react-quill" ? (
+									<ReactQuill
+										value={formData.descripcion}
+										onChange={handleDescripcionChange}
+										theme="snow"
+										required
+										modules={modules} // Aquí aplicamos la configuración
+									/>
+								) : field.type === "textarea" ? (
 									<textarea
 										className="form-control"
 										name={field.name}
@@ -149,7 +184,7 @@ const CrearEvento = () => {
 				{/* Vista previa */}
 				<div className="col-md-6">
 					<h2>Vista previa del evento</h2>
-					<div className="card text-center mb-4 shadow">
+					<div className="card mb-4 shadow">
 						<div className="card-header bg-primary text-white">
 							📅 Evento: {formData.titulo || "Sin título aún"}
 						</div>
@@ -161,7 +196,14 @@ const CrearEvento = () => {
 
 							<p className="card-text">
 								📖 Descripción:{" "}
-								{formData.descripcion || "Agrega una descripción"}
+								{formData.descripcion ? (
+									<div
+										className="descripcion-preview"
+										dangerouslySetInnerHTML={{ __html: formData.descripcion }}
+									/>
+								) : (
+									"Agrega una descripción"
+								)}
 							</p>
 
 							<p className="card-text">

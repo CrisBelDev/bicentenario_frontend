@@ -178,7 +178,13 @@ const HomePage = () => {
 
 											<div className="card-body d-flex flex-column">
 												<h5 className="card-title">{evento.titulo}</h5>
-												<p className="card-text">{evento.descripcion}</p>
+												<div className="card-text">
+													<div
+														dangerouslySetInnerHTML={{
+															__html: evento.descripcion,
+														}}
+													/>
+												</div>
 												<p className="text-muted small mt-auto">
 													📍 {evento.ubicacion} <br />
 													📅{" "}
@@ -190,7 +196,10 @@ const HomePage = () => {
 											</div>
 
 											<div className="card-footer bg-white border-0">
-												<a href="#" className="btn btn-sm btn-primary w-100">
+												<a
+													href={`/evento/${evento.id_evento}`}
+													className="btn btn-sm btn-primary w-100"
+												>
 													Ver Detalles
 												</a>
 											</div>

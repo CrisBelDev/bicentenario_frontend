@@ -69,3 +69,11 @@
 .navbar-toggler-icon {
 	filter: invert(0); /* Mantiene el ícono oscuro */
 }
+
+.form-control {
+	color: #000;
+}
+
+ol {
+	list-style-type: disc;
+}
