@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import usuariosAxios from "../../config/axios"; // Cliente Axios configurado
+import { validarSesion } from "../../utils/ValidarSesion";
 
 const CrearEvento = () => {
 	const [formData, setFormData] = useState({
@@ -8,26 +10,27 @@ const CrearEvento = () => {
 		fecha_inicio: "",
 		fecha_fin: "",
 		ubicacion: "",
-		imagenes: null, // Cambiado a null para manejar archivos
+		imagenes: null,
 		tipo: "",
 	});
 
 	const [mensaje, setMensaje] = useState("");
+	const navigate = useNavigate();
+	const token = localStorage.getItem("tokenLogin");
 
-	// Manejar cambios en los campos de texto
+	// Si no hay token, redirigir a la página de inicio
+	useEffect(() => {
+		if (!token) {
+			navigate("/");
+		}
+	}, [token, navigate]);
+
+	// Manejar cambios en los campos de texto o archivos
 	const handleChange = (e) => {
-		const { name, value } = e.target;
+		const { name, value, type, files } = e.target;
 		setFormData((prevData) => ({
 			...prevData,
-			[name]: value,
-		}));
-	};
-
-	// Manejar cambio de imagen
-	const handleFileChange = (e) => {
-		setFormData((prevData) => ({
-			...prevData,
-			imagenes: e.target.files[0], // Guardamos el archivo seleccionado
+			[name]: type === "file" ? files[0] : value, // Manejar imágenes si es el caso
 		}));
 	};
 
@@ -35,25 +38,23 @@ const CrearEvento = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		if (!token) {
+			setMensaje("❌ No se encontró el token. Inicia sesión nuevamente.");
+			return;
+		}
+
+		const data = new FormData();
+		data.append("titulo", formData.titulo);
+		data.append("descripcion", formData.descripcion);
+		data.append("fecha_inicio", formData.fecha_inicio);
+		data.append("fecha_fin", formData.fecha_fin);
+		data.append("ubicacion", formData.ubicacion);
+		if (formData.imagenes) {
+			data.append("imagenes", formData.imagenes); // Adjuntar imagen solo si existe
+		}
+		data.append("tipo", formData.tipo);
+
 		try {
-			const token = localStorage.getItem("tokenLogin");
-
-			if (!token) {
-				setMensaje("❌ No se encontró el token. Inicia sesión nuevamente.");
-				return;
-			}
-
-			const data = new FormData();
-			data.append("titulo", formData.titulo);
-			data.append("descripcion", formData.descripcion);
-			data.append("fecha_inicio", formData.fecha_inicio);
-			data.append("fecha_fin", formData.fecha_fin);
-			data.append("ubicacion", formData.ubicacion);
-			if (formData.imagenes) {
-				data.append("imagenes", formData.imagenes); // Adjuntar imagen solo si existe
-			}
-			data.append("tipo", formData.tipo);
-
 			const response = await usuariosAxios.post("/evento/registrar", data, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -77,6 +78,7 @@ const CrearEvento = () => {
 		} catch (error) {
 			console.error("Error al crear el evento:", error);
 			setMensaje("❌ Error al crear el evento");
+			if (validarSesion(error, navigate)) return; // Si la sesión expiró, no seguimos ejecutando
 		}
 	};
 
@@ -87,93 +89,52 @@ const CrearEvento = () => {
 				<div className="col-md-6">
 					<h2>Crear Nuevo Evento</h2>
 					<form onSubmit={handleSubmit} className="mt-3">
-						{/* Título */}
-						<div className="mb-3">
-							<label className="form-label">Título</label>
-							<input
-								type="text"
-								className="form-control"
-								name="titulo"
-								value={formData.titulo}
-								onChange={handleChange}
-								required
-							/>
-						</div>
+						{/* Campos de formulario */}
+						{[
+							{ label: "Título", name: "titulo", type: "text" },
+							{ label: "Descripción", name: "descripcion", type: "textarea" },
+							{
+								label: "Fecha Inicio",
+								name: "fecha_inicio",
+								type: "datetime-local",
+							},
+							{ label: "Fecha Fin", name: "fecha_fin", type: "datetime-local" },
+							{ label: "Ubicación", name: "ubicacion", type: "text" },
+							{ label: "Tipo", name: "tipo", type: "text" },
+						].map((field) => (
+							<div className="mb-3" key={field.name}>
+								<label className="form-label">{field.label}</label>
+								{field.type === "textarea" ? (
+									<textarea
+										className="form-control"
+										name={field.name}
+										value={formData[field.name]}
+										onChange={handleChange}
+										rows="4"
+										required
+									/>
+								) : (
+									<input
+										type={field.type}
+										className="form-control"
+										name={field.name}
+										value={formData[field.name]}
+										onChange={handleChange}
+										required
+									/>
+								)}
+							</div>
+						))}
 
-						{/* Descripción */}
-						<div className="mb-3">
-							<label className="form-label">Descripción</label>
-							<textarea
-								className="form-control"
-								name="descripcion"
-								value={formData.descripcion}
-								onChange={handleChange}
-								rows="4"
-								required
-							></textarea>
-						</div>
-
-						{/* Fecha Inicio */}
-						<div className="mb-3">
-							<label className="form-label">Fecha Inicio</label>
-							<input
-								type="datetime-local"
-								className="form-control"
-								name="fecha_inicio"
-								value={formData.fecha_inicio}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-
-						{/* Fecha Fin */}
-						<div className="mb-3">
-							<label className="form-label">Fecha Fin</label>
-							<input
-								type="datetime-local"
-								className="form-control"
-								name="fecha_fin"
-								value={formData.fecha_fin}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-
-						{/* Ubicación */}
-						<div className="mb-3">
-							<label className="form-label">Ubicación</label>
-							<input
-								type="text"
-								className="form-control"
-								name="ubicacion"
-								value={formData.ubicacion}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-
-						{/* Imágenes */}
+						{/* Imagenes */}
 						<div className="mb-3">
 							<label className="form-label">Imágenes</label>
 							<input
 								type="file"
 								className="form-control"
 								name="imagenes"
-								onChange={handleFileChange}
-								accept="image/*"
-							/>
-						</div>
-
-						{/* Tipo */}
-						<div className="mb-3">
-							<label className="form-label">Tipo</label>
-							<input
-								type="text"
-								className="form-control"
-								name="tipo"
-								value={formData.tipo}
 								onChange={handleChange}
-								required
+								accept="image/*"
 							/>
 						</div>
 

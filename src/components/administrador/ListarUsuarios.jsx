@@ -2,60 +2,45 @@ import React, { useEffect, useState, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import usuariosAxios from "../../config/axios"; // Asegúrate de tener correctamente configurada esta instancia
+import { validarSesion } from "../../utils/ValidarSesion"; // Importamos la función
 
 function ListarUsuarios() {
-	// Estado para los usuarios
 	const [usuarios, guardarUsuarios] = useState([]);
-	const [busqueda, setBusqueda] = useState(""); // Estado para la búsqueda
+	const [busqueda, setBusqueda] = useState("");
 	const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
-	const [cargando, setCargando] = useState(false); // Estado para la carga
+	const [cargando, setCargando] = useState(false);
 
 	const token = localStorage.getItem("tokenLogin");
-
-	// Usamos useNavigate
 	const navigate = useNavigate();
 
-	// Si no hay token, redirigimos al usuario al inicio
 	if (!token) {
 		navigate("/"); // Redirige al home si no hay token
 		return;
 	}
 
-	// Consultar API
 	useEffect(() => {
 		const consultarApi = async () => {
-			setCargando(true); // Inicia carga
+			setCargando(true);
 			try {
 				const { data } = await usuariosAxios.get("/usuarios", {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
 				});
-				console.log(data);
 				guardarUsuarios(data);
 				setUsuariosFiltrados(data);
 			} catch (error) {
-				console.log(error.response);
-
-				// Capturamos el error de expiración del token enviado por el backend
-				if (error.response.data.message.includes("Token invalido o expirado")) {
-					localStorage.removeItem("tokenLogin");
-					// Solo muestra una alerta y redirige al home
-					alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-					navigate("/"); // Redirigir al home
-					return; // Terminamos la ejecución aquí
-				}
-
+				// Usamos la función validarSesion para manejar la expiración del token
+				if (validarSesion(error, navigate)) return; // Si la sesión expiró, no seguimos ejecutando
 				console.error("Error al obtener los usuarios:", error);
 			} finally {
-				setCargando(false); // Termina carga
+				setCargando(false);
 			}
 		};
 
 		consultarApi();
-	}, [token, navigate]); // Dependencia en token
+	}, [token, navigate]);
 
-	// Función para filtrar usuarios
 	const handleBusqueda = (e) => {
 		setBusqueda(e.target.value);
 		const filtro = usuarios.filter((usuario) =>
@@ -66,7 +51,6 @@ function ListarUsuarios() {
 		setUsuariosFiltrados(filtro);
 	};
 
-	// Definir las columnas para la tabla
 	const columnas = [
 		{
 			name: "Nombre",
@@ -98,7 +82,6 @@ function ListarUsuarios() {
 		},
 	];
 
-	// Estilos personalizados para la tabla
 	const customStyles = {
 		headCells: {
 			style: {
@@ -129,7 +112,6 @@ function ListarUsuarios() {
 					</Link>
 				</div>
 
-				{/* Barra de búsqueda con label */}
 				<div className="mb-3">
 					<label className="fw-bold text-primary">🔎 Buscar usuario:</label>
 					<input
@@ -144,7 +126,6 @@ function ListarUsuarios() {
 					📌 Total de registros: {usuarios.length}
 				</span>
 
-				{/* Tabla de datos */}
 				<DataTable
 					columns={columnas}
 					data={usuariosFiltrados}
