@@ -65,10 +65,8 @@ function Login() {
 			// Si el login es exitoso, almacenar el token y los datos en localStorage
 			if (respuesta.data.token) {
 				localStorage.setItem("tokenLogin", respuesta.data.token);
-				localStorage.setItem(
-					"userName",
-					`${respuesta.data.nombre} ${respuesta.data.apellido}`
-				);
+				localStorage.setItem("nombre", respuesta.data.nombre);
+				localStorage.setItem("apellido", respuesta.data.apellido);
 
 				// Disparar un evento personalizado para actualizar PublicNav
 				window.dispatchEvent(new Event("storage"));

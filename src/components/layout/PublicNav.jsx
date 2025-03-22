@@ -6,13 +6,13 @@ import "font-awesome/css/font-awesome.min.css"; // Asegúrate de importar los es
 const PublicNav = () => {
 	const navigate = useNavigate();
 	const [usuario, setUsuario] = useState(
-		localStorage.getItem("userName") || null
+		localStorage.getItem("nombre") || null
 	);
 
 	useEffect(() => {
 		// Detectar cambios en el localStorage cuando el usuario inicia/cierra sesión
 		const handleStorageChange = () => {
-			setUsuario(localStorage.getItem("userName"));
+			setUsuario(localStorage.getItem("nombre"));
 		};
 
 		window.addEventListener("storage", handleStorageChange);
@@ -24,7 +24,8 @@ const PublicNav = () => {
 
 	const cerrarSesion = () => {
 		localStorage.removeItem("tokenLogin");
-		localStorage.removeItem("userName");
+		localStorage.removeItem("nombre");
+		localStorage.removeItem("apellido");
 		setUsuario(null); // Actualizar estado para ocultar el perfil
 		navigate("/login");
 	};

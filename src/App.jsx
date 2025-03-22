@@ -101,7 +101,10 @@ const App = () => {
 							// Borrar datos del usuario y redirigir al login
 							localStorage.removeItem("tokenLogin");
 							localStorage.removeItem("userRole");
-							window.location.href = "/login";
+							localStorage.removeItem("userName");
+							localStorage.removeItem("nombre");
+							localStorage.removeItem("apellido");
+							window.location.reload(); // Refresca la página
 						}
 					});
 				}

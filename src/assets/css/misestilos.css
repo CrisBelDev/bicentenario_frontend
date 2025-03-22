@@ -36,6 +36,12 @@
 	background: linear-gradient(to right, #d52b1e, #ffcc00, #007a33);
 	z-index: 999;
 }
+.borderline {
+	width: 100%;
+	height: 5px;
+	background: linear-gradient(to right, #d52b1e, #ffcc00, #007a33);
+	margin-bottom: 15px;
+}
 .color-menu {
 	background-color: #003366; /* Azul oscuro o el color que prefieras */
 	padding: 10px 0;

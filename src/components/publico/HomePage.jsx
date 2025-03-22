@@ -137,6 +137,7 @@ const HomePage = () => {
 				{/* Eventos */}
 				<section id="eventos" className="py-5">
 					<div className="container">
+						<div className="borderline"></div>
 						<h2 className="fw-bold text-center mb-4">
 							Eventos del Bicentenario
 						</h2>
@@ -165,7 +166,7 @@ const HomePage = () => {
 													src={evento.imagenes[0]}
 													className="card-img-top"
 													alt={evento.titulo}
-													style={{ height: "200px", objectFit: "cover" }}
+													style={{ height: "300px", objectFit: "cover" }}
 												/>
 											) : (
 												<img
