@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	BrowserRouter as Router,
 	Route,
 	Routes,
 	Navigate,
 } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+import Swal from "sweetalert2"; // Instala con `npm install sweetalert2`
+
 import PublicNav from "./components/layout/PublicNav";
 import PrivateNav from "./components/layout/PrivateNav";
 
 // Componentes
-
 import NuevoUsuario from "./components/usuarios/NuevoUsuario";
 import Productos from "./components/productos/Productos";
 import HomePage from "./components/publico/HomePage";
@@ -19,36 +22,100 @@ import RecuperarPassword from "./components/usuarios/RecuperarPassword";
 import CambiarPassword from "./components/usuarios/CambiarPassword";
 import Dashboard from "./components/usuarios/dashboard";
 
-//dasboard
-import AdminDashboard from "./components/administrador/template/AdminDashboard"; // Dashboard para administradores
-import LoginAdmin from "./components/administrador/LoginAdmin"; // Login para administradores
+// Dashboard
+import AdminDashboard from "./components/administrador/template/AdminDashboard";
+import LoginAdmin from "./components/administrador/LoginAdmin";
 import ListarUsuarios from "./components/administrador/ListarUsuarios";
 import CrearEvento from "./components/administrador/CrearEvento";
+
+// Función para verificar si el token ha expirado
+// Función para verificar si el token ha expirado
+const isTokenExpired = (token) => {
+	try {
+		const decoded = jwtDecode(token);
+		if (!decoded.exp) return true;
+
+		const currentTime = Date.now() / 1000; // Convertimos el tiempo actual a segundos
+		const isExpired = decoded.exp < currentTime;
+
+		// Log para ver el tiempo de expiración y la comparación
+		console.log("Tiempo actual:", currentTime);
+		console.log("Expiración del token:", decoded.exp);
+		console.log("¿Token expirado?", isExpired ? "Sí" : "No");
+
+		return isExpired;
+	} catch (error) {
+		return true;
+	}
+};
+
 // Componente que protege rutas privadas
 const PrivateRoute = ({ element }) => {
 	const token = localStorage.getItem("tokenLogin");
-	return token ? element : <Navigate to="/login" />; // Redirige al login si no está autenticado
+	return token && !isTokenExpired(token) ? element : <Navigate to="/login" />;
 };
 
 // Componente que protege rutas para administradores
 const AdminRoute = ({ element }) => {
 	const token = localStorage.getItem("tokenLogin");
-	const userRole = localStorage.getItem("userRole"); // Suponemos que el rol del usuario está almacenado en el localStorage
+	const userRole = localStorage.getItem("userRole");
 
-	if (token && userRole === "admin") {
-		return element; // Si es administrador, permite el acceso
+	if (token && userRole === "admin" && !isTokenExpired(token)) {
+		return element;
 	} else {
-		return <Navigate to="/" />; // Si no es administrador, redirige a la página principal
+		return <Navigate to="/" />;
 	}
 };
 
-// Componente que protege rutas públicas (solo redirige si está autenticado)
+// Componente que protege rutas públicas
 const PublicRoute = ({ element }) => {
 	const token = localStorage.getItem("tokenLogin");
-	return token ? <Navigate to="/" /> : element; // Redirige a la home si ya está autenticado
+	return token && !isTokenExpired(token) ? <Navigate to="/" /> : element;
 };
 
 const App = () => {
+	useEffect(() => {
+		const checkTokenExpiration = () => {
+			const token = localStorage.getItem("tokenLogin");
+
+			if (token) {
+				const expired = isTokenExpired(token);
+
+				// Log para ver si el token está expirado
+				console.log(
+					"Verificando expiración del token:",
+					expired ? "Expirado" : "Válido"
+				);
+
+				if (expired) {
+					// Mostrar alerta con SweetAlert2
+					Swal.fire({
+						icon: "warning",
+						title: "Sesión Expirada",
+						text: "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.",
+						confirmButtonText: "Aceptar",
+						backdrop: "static", // Impide que se cierre al hacer clic fuera de la alerta
+						allowOutsideClick: false, // No permite cerrar la alerta al hacer clic fuera
+					}).then((result) => {
+						if (result.isConfirmed) {
+							// Borrar datos del usuario y redirigir al login
+							localStorage.removeItem("tokenLogin");
+							localStorage.removeItem("userRole");
+							window.location.href = "/login";
+						}
+					});
+				}
+			}
+		};
+
+		checkTokenExpiration(); // Verificar al cargar la app
+
+		// Configurar un intervalo para verificar periódicamente
+		const interval = setInterval(checkTokenExpiration, 60000); // Cada 1 minuto= 60000
+
+		return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
+	}, []);
+
 	return (
 		<Router>
 			<Routes>
@@ -112,10 +179,8 @@ const App = () => {
 					path="/bicentenario-dashboard"
 					element={<AdminRoute element={<AdminDashboard />} />}
 				>
-					{/* Rutas hijas del dashboard */}
 					<Route path="listar-usuarios" element={<ListarUsuarios />} />
 					<Route path="crear-evento" element={<CrearEvento />} />
-					{/* Otras rutas dentro del dashboard */}
 				</Route>
 
 				{/* Login exclusivo para administradores */}
