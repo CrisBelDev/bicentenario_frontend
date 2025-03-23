@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import usuariosAxios from "../../config/axios";
+import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
 
 const HomePage = () => {
 	const [eventos, setEventos] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [pagina, setPagina] = useState(1);
 
 	useEffect(() => {
 		const fetchEventos = async () => {
 			try {
-				const response = await usuariosAxios.get("/evento/mostrar");
+				const response = await usuariosAxios.get("/evento/mostrarPaginas", {
+					params: { page: pagina, limit: 6 },
+				});
 
-				console.log("Respuesta completa:", response.data);
+				console.log("Eventos paginados:", response.data.eventos);
 
 				const eventosBackend = response.data.eventos;
 
@@ -37,7 +41,10 @@ const HomePage = () => {
 		};
 
 		fetchEventos();
-	}, []);
+	}, [pagina]); // Rehacer la petición cada vez que cambie la página
+
+	const siguientePagina = () => setPagina(pagina + 1);
+	const paginaAnterior = () => setPagina(pagina - 1);
 
 	return (
 		<div className="index-page">
@@ -133,7 +140,6 @@ const HomePage = () => {
 						</div>
 					</div>
 				</section>
-
 				{/* Eventos */}
 				<section id="eventos" className="py-5">
 					<div className="container">
@@ -209,6 +215,13 @@ const HomePage = () => {
 								))}
 							</div>
 						)}
+
+						{/* Botón para ver más eventos (redirige a eventos-list con la página siguiente) */}
+						<div className="text-center mt-4">
+							<Link to={`/eventos`} className="btn btn-primary">
+								Ver más eventos
+							</Link>
+						</div>
 					</div>
 				</section>
 			</main>

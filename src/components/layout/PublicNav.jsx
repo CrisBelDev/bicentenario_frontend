@@ -57,8 +57,8 @@ const PublicNav = () => {
 									<Nav.Link as={Link} to="/" className="active">
 										Home
 									</Nav.Link>
-									<Nav.Link as={Link} to="#about">
-										About
+									<Nav.Link as={Link} to="/eventos">
+										Eventos
 									</Nav.Link>
 									<Nav.Link as={Link} to="#services">
 										Services

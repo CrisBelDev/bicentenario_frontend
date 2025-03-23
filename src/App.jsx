@@ -21,7 +21,7 @@ import Login from "./components/usuarios/login";
 import RecuperarPassword from "./components/usuarios/RecuperarPassword";
 import CambiarPassword from "./components/usuarios/CambiarPassword";
 import Dashboard from "./components/usuarios/dashboard";
-
+import Eventos from "./components/publico/eventos";
 // Dashboard
 import AdminDashboard from "./components/administrador/template/AdminDashboard";
 import LoginAdmin from "./components/administrador/LoginAdmin";
@@ -132,6 +132,26 @@ const App = () => {
 						</>
 					}
 				/>
+				<Route
+					path="/eventos" // Corrige la ruta aquí
+					element={
+						<>
+							<PublicNav />
+							<Eventos />
+						</>
+					}
+				/>
+
+				<Route
+					path="/eventos/:pagina" // Ahora recibe un parámetro 'pagina'
+					element={
+						<>
+							<PublicNav />
+							<Eventos />
+						</>
+					}
+				/>
+
 				<Route
 					path="/productos"
 					element={
