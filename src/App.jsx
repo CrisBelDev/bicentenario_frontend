@@ -132,25 +132,26 @@ const App = () => {
 						</>
 					}
 				/>
-				<Route
-					path="/eventos" // Corrige la ruta aquí
-					element={
-						<>
-							<PublicNav />
-							<Eventos />
-						</>
-					}
-				/>
-
-				<Route
-					path="/eventos/:pagina" // Ahora recibe un parámetro 'pagina'
-					element={
-						<>
-							<PublicNav />
-							<Eventos />
-						</>
-					}
-				/>
+				<Route path="/eventos">
+					<Route
+						index
+						element={
+							<>
+								<PublicNav />
+								<Eventos />
+							</>
+						}
+					/>
+					<Route
+						path=":pagina"
+						element={
+							<>
+								<PublicNav />
+								<Eventos />
+							</>
+						}
+					/>
+				</Route>
 
 				<Route
 					path="/productos"
