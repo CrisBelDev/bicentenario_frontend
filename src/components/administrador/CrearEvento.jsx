@@ -127,7 +127,6 @@ const CrearEvento = () => {
 							},
 							{ label: "Fecha Fin", name: "fecha_fin", type: "datetime-local" },
 							{ label: "Ubicación", name: "ubicacion", type: "text" },
-							{ label: "Tipo", name: "tipo", type: "text" },
 						].map((field) => (
 							<div className="mb-3" key={field.name}>
 								<label className="form-label">{field.label}</label>
@@ -160,6 +159,21 @@ const CrearEvento = () => {
 								)}
 							</div>
 						))}
+						<div className="mb-3">
+							<label className="form-label">Tipo de evento</label>
+							<select
+								className="form-control"
+								name="tipo"
+								value={formData.tipo}
+								onChange={handleChange}
+								required
+							>
+								<option value="">Selecciona una opción</option>
+								<option value="cultural">Cultural</option>
+								<option value="academico">Académico</option>
+								<option value="gastronomico">Gastronómico</option>
+							</select>
+						</div>
 
 						{/* Imagenes */}
 						<div className="mb-3">
