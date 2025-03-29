@@ -5,6 +5,22 @@ import { validarSesion } from "../../utils/ValidarSesion";
 import ReactQuill, { Quill } from "react-quill-new"; // Asegúrate de tener Quill importado
 import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
 
+// Leaflet Imports
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import { useMap } from "react-leaflet";
+
+const MapUpdater = ({ position }) => {
+	const map = useMap();
+	useEffect(() => {
+		map.setView(position); // Actualiza la vista del mapa a las nuevas coordenadas
+	}, [position, map]);
+
+	return null;
+};
+
 const CrearEvento = () => {
 	const [formData, setFormData] = useState({
 		titulo: "",
@@ -17,6 +33,7 @@ const CrearEvento = () => {
 	});
 
 	const [mensaje, setMensaje] = useState("");
+	const [mapPosition, setMapPosition] = useState([0, 0]); // Coordenadas del mapa
 	const navigate = useNavigate();
 	const token = localStorage.getItem("tokenLogin");
 
@@ -44,6 +61,33 @@ const CrearEvento = () => {
 		}));
 	};
 
+	// Manejar cambios en la ubicación
+	const handleUbicacionChange = (e) => {
+		const { value } = e.target;
+		setFormData((prevData) => ({
+			...prevData,
+			ubicacion: value, // Actualizar el estado con la nueva ubicación
+		}));
+
+		// Convertir ubicación en coordenadas y actualizar el mapa solo si las coordenadas son válidas
+		const coords = value.split(",").map((coord) => parseFloat(coord.trim()));
+
+		// Ver en consola las coordenadas que se están recibiendo
+		console.log("Coordenadas recibidas:", coords);
+
+		if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+			setMapPosition(coords); // Actualizamos las coordenadas del mapa
+			console.log("Coordenadas válidas:", coords); // Ver en consola cuando las coordenadas son válidas
+		} else {
+			setMensaje("❌ Ubicación inválida. Usa el formato 'latitud, longitud'.");
+			console.log("Coordenadas inválidas:", coords); // Ver en consola cuando las coordenadas son inválidas
+		}
+	};
+
+	useEffect(() => {
+		console.log("Nueva posición del mapa:", mapPosition); // Este log se ejecutará cada vez que cambien las coordenadas
+	}, [mapPosition]); // Dependencia de mapPosition
+
 	// Configuración de la barra de herramientas para ReactQuill
 	const modules = {
 		toolbar: [
@@ -52,7 +96,6 @@ const CrearEvento = () => {
 			["bold", "italic", "underline", "strike"],
 			[{ color: [] }],
 			["link"],
-
 			["clean"],
 		],
 	};
@@ -126,7 +169,6 @@ const CrearEvento = () => {
 								type: "datetime-local",
 							},
 							{ label: "Fecha Fin", name: "fecha_fin", type: "datetime-local" },
-							{ label: "Ubicación", name: "ubicacion", type: "text" },
 						].map((field) => (
 							<div className="mb-3" key={field.name}>
 								<label className="form-label">{field.label}</label>
@@ -153,12 +195,33 @@ const CrearEvento = () => {
 										className="form-control"
 										name={field.name}
 										value={formData[field.name]}
-										onChange={handleChange}
+										onChange={
+											field.name === "ubicacion"
+												? handleUbicacionChange
+												: handleChange
+										}
 										required
 									/>
 								)}
 							</div>
 						))}
+
+						{/* Campo de ubicación */}
+						<div className="mb-3">
+							<label className="form-label">
+								Ubicación (Latitud, Longitud)
+							</label>
+							<input
+								type="text"
+								className="form-control"
+								name="ubicacion"
+								value={formData.ubicacion}
+								onChange={handleUbicacionChange}
+								placeholder="Ejemplo: 12.3456, -76.5432"
+								required
+							/>
+						</div>
+
 						<div className="mb-3">
 							<label className="form-label">Tipo de evento</label>
 							<select
@@ -185,6 +248,12 @@ const CrearEvento = () => {
 								onChange={handleChange}
 								accept="image/*"
 							/>
+							{formData.imagenes && (
+								<div className="mt-2">
+									<strong>Archivo seleccionado:</strong>{" "}
+									{formData.imagenes.name}
+								</div>
+							)}
 						</div>
 
 						<button type="submit" className="btn btn-primary">
@@ -253,6 +322,21 @@ const CrearEvento = () => {
 						</div>
 					</div>
 				</div>
+
+				{/* Mapa */}
+				{
+					<MapContainer
+						center={mapPosition}
+						zoom={20}
+						style={{ height: "400px", width: "100%" }}
+					>
+						<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+						<Marker position={mapPosition}>
+							<Popup>Ubicación: {formData.ubicacion}</Popup>
+						</Marker>
+						<MapUpdater position={mapPosition} />
+					</MapContainer>
+				}
 			</div>
 		</div>
 	);
