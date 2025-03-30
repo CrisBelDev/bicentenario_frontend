@@ -16,7 +16,7 @@ const AdminDashboard = () => {
 			<Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} />
 
 			{/* Content Wrapper */}
-			<div id="content-wrapper" className="d-flex flex-column">
+			<div id="content-wrapper" className="d-flex flex-column colorDash">
 				{/* Main Content */}
 				<div id="content">
 					{/* Topbar */}

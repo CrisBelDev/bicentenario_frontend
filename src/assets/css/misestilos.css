@@ -79,6 +79,10 @@
 .form-control {
 	color: #000;
 }
+.form-control,
+.quill {
+	border: 1px solid #303135;
+}
 
 ol {
 	list-style-type: disc;
@@ -92,8 +96,6 @@ ol {
 }
 
 .card {
-	background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente */
-	color: white; /* Texto en blanco para contraste */
 	border-radius: 10px; /* Bordes redondeados */
 	backdrop-filter: blur(10px); /* Efecto de desenfoque */
 	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
@@ -106,21 +108,7 @@ ol {
 .card-footer {
 	background: rgba(0, 0, 0, 0.5); /* Un footer ligeramente más oscuro */
 	border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.form-control {
-	background: rgba(
-		255,
-		255,
-		255,
-		0.1
-	); /* Campos con un poco de transparencia */
 	color: white;
-	border: none;
-}
-
-.form-control::placeholder {
-	color: rgba(255, 255, 255, 0.7); /* Color más tenue para los placeholders */
 }
 
 .btn-primary {
@@ -130,4 +118,13 @@ ol {
 
 .btn-primary:hover {
 	background-color: #0056b3;
+}
+#wrapper #content-wrapper {
+	background-color: #cccccc8c;
+}
+.colorfondo_formulario {
+	background-color: #e9ebec;
+}
+.card-header h3 {
+	color: white;
 }
