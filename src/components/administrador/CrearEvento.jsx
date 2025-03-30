@@ -28,6 +28,7 @@ const CrearEvento = () => {
 		fecha_inicio: "",
 		fecha_fin: "",
 		ubicacion: "",
+
 		imagenes: null,
 		tipo: "",
 	});
@@ -53,6 +54,14 @@ const CrearEvento = () => {
 			...prevData,
 			[name]: type === "file" ? files[0] : value, // Manejar imágenes si es el caso
 		}));
+	};
+
+	const mostrarMensaje = (mensaje) => {
+		setMensaje(mensaje);
+		// Ocultar el mensaje después de 3 segundos
+		setTimeout(() => {
+			setMensaje("");
+		}, 3000); // 3000 milisegundos = 3 segundos
 	};
 
 	// Manejar cambios en la descripción con ReactQuill
@@ -84,6 +93,46 @@ const CrearEvento = () => {
 			setMensaje("❌ Ubicación inválida. Usa el formato 'latitud, longitud'.");
 			console.log("Coordenadas inválidas:", coords); // Ver en consola cuando las coordenadas son inválidas
 		}
+	};
+	const [escribeUbicacion, setEscribeUbicacion] = useState(""); // Estado independiente para la dirección escrita
+
+	const handleSearchLocation = async () => {
+		if (!escribeUbicacion) {
+			console.log(escribeUbicacion);
+			setMensaje("❌ Ingresa una dirección.");
+			return;
+		}
+
+		try {
+			// Añadimos countrycodes=BO para limitar la búsqueda a Bolivia
+			// Añadimos el parámetro 'bounded=1' para limitar la búsqueda a las coordenadas de Bolivia
+			const response = await fetch(
+				`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+					escribeUbicacion
+				)}&countrycodes=BO&bounded=1&viewbox=-69.3,-22.9,-57.4,-9.5` // Coordenadas aproximadas para los límites de Bolivia
+			);
+			const data = await response.json();
+
+			if (data.length > 0) {
+				const { lat, lon } = data[0];
+				const coords = [parseFloat(lat), parseFloat(lon)];
+				setMapPosition(coords); // Actualizamos la ubicación en el mapa
+				setFormData((prevData) => ({
+					...prevData,
+					ubicacion: `${lat}, ${lon}`, // Actualizamos las coordenadas en el formulario
+				}));
+				mostrarMensaje("✅ Ubicación encontrada.");
+			} else {
+				setMensaje("❌ No se encontró la dirección.");
+			}
+		} catch (error) {
+			console.error("Error al buscar la ubicación:", error);
+			setMensaje("❌ Error al buscar la dirección.");
+		}
+	};
+
+	const handleEscribeUbicacionChange = (e) => {
+		setEscribeUbicacion(e.target.value); // Actualiza el estado del campo de la dirección escrita
 	};
 
 	useEffect(() => {
@@ -235,6 +284,26 @@ const CrearEvento = () => {
 										required
 									/>
 								</div>
+
+								<div className="mb-3">
+									<label className="form-label">O escribe la direccion</label>
+									<input
+										type="text"
+										className="form-control"
+										name="escribeUbicacion"
+										placeholder="si prefieres escribe la direccion"
+										value={escribeUbicacion} // Asegúrate de que el input esté correctamente ligado al estado
+										onChange={handleEscribeUbicacionChange} // Captura el cambio
+									/>
+								</div>
+								<button
+									type="button"
+									className="btn btn-info mt-2"
+									onClick={handleSearchLocation}
+								>
+									🔍 Buscar Dirección
+								</button>
+
 								<div className="mb-3">
 									{/* Mapa */}
 									{
@@ -244,9 +313,23 @@ const CrearEvento = () => {
 											style={{ height: "400px", width: "100%" }}
 										>
 											<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-											<Marker position={mapPosition}>
-												<Popup>Ubicación: {formData.ubicacion}</Popup>
+											<Marker
+												position={mapPosition}
+												draggable={true}
+												eventHandlers={{
+													dragend: (event) => {
+														const { lat, lng } = event.target.getLatLng();
+														setMapPosition([lat, lng]);
+														setFormData((prev) => ({
+															...prev,
+															ubicacion: `${lat}, ${lng}`,
+														}));
+													},
+												}}
+											>
+												<Popup>Ubicación seleccionada</Popup>
 											</Marker>
+
 											<MapUpdater position={mapPosition} />
 										</MapContainer>
 									}
