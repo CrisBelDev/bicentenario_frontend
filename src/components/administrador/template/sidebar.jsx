@@ -46,6 +46,14 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
 				</Link>
 			</li>
 
+			{/* Nav Item - Listar Evento */}
+			<li className="nav-item">
+				<Link className="nav-link" to="listar-evento">
+					<i className="fas fa-fw fa-calendar-alt"></i>
+					<span>Lista de eventos</span>
+				</Link>
+			</li>
+
 			{/* Otros enlaces de navegación */}
 			{/* Agregar más rutas aquí para otras secciones del dashboard */}
 		</ul>

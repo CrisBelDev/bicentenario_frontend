@@ -39,9 +39,9 @@ const isTokenExpired = (token) => {
 		const isExpired = decoded.exp < currentTime;
 		//modificando
 		// Log para ver el tiempo de expiración y la comparación
-		console.log("Tiempo actual:", currentTime);
+		/* console.log("Tiempo actual:", currentTime);
 		console.log("Expiración del token:", decoded.exp);
-		console.log("¿Token expirado?", isExpired ? "Sí" : "No");
+		console.log("¿Token expirado?", isExpired ? "Sí" : "No"); */
 
 		return isExpired;
 	} catch (error) {
@@ -82,10 +82,10 @@ const App = () => {
 				const expired = isTokenExpired(token);
 
 				// Log para ver si el token está expirado
-				console.log(
+				/* console.log(
 					"Verificando expiración del token:",
 					expired ? "Expirado" : "Válido"
-				);
+				); */
 
 				if (expired) {
 					// Mostrar alerta con SweetAlert2

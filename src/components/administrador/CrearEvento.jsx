@@ -11,7 +11,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { useMap } from "react-leaflet";
-
+import FormularioDinamico from "./FormularioDinamico";
 const MapUpdater = ({ position }) => {
 	const map = useMap();
 	useEffect(() => {
@@ -348,6 +348,8 @@ const CrearEvento = () => {
 										<option value="cultural">Cultural</option>
 										<option value="academico">Académico</option>
 										<option value="gastronomico">Gastronómico</option>
+										<option value="deportivo">Deportivo</option>
+										<option value="historico">Historico</option>
 									</select>
 								</div>
 
@@ -383,8 +385,20 @@ const CrearEvento = () => {
 					</div>
 				</div>
 
-				{/* Vista previa */}
+				{/* Aqui va el formulario dinamico en base al tipo de evento */}
 				<div className="col-md-6">
+					{/* Mostrar el FormularioDinamico según el tipo de evento */}
+					{formData.tipo && <FormularioDinamico tipo={formData.tipo} />}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default CrearEvento;
+
+{
+	/* <div className="col-md-6">
 					<h2>Vista previa del evento</h2>
 					<div className="card mb-4 shadow">
 						<div className="card-header bg-primary text-white">
@@ -436,20 +450,11 @@ const CrearEvento = () => {
 							<p className="card-text">
 								🎯 Tipo de evento: {formData.tipo || "Sin tipo"}
 							</p>
-
-							<button className="btn btn-secondary" disabled>
-								Ver detalles
-							</button>
 						</div>
 
 						<div className="card-footer ">
 							📅 Previsualización en tiempo real
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-	);
-};
-
-export default CrearEvento;
+				</div> */
+}
