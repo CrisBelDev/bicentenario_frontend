@@ -399,15 +399,7 @@ const CrearEvento = () => {
 						<div className="card-footer"></div>
 					</div>
 				</div>
-			</div>
-		</div>
-	);
-};
-
-export default CrearEvento;
-
-{
-	/* <div className="col-md-6">
+				<div className="col-md-6">
 					<h2>Vista previa del evento</h2>
 					<div className="card mb-4 shadow">
 						<div className="card-header bg-primary text-white">
@@ -465,5 +457,10 @@ export default CrearEvento;
 							📅 Previsualización en tiempo real
 						</div>
 					</div>
-				</div> */
-}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default CrearEvento;
