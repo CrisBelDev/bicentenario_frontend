@@ -27,7 +27,7 @@ import AdminDashboard from "./components/administrador/template/AdminDashboard";
 import LoginAdmin from "./components/administrador/LoginAdmin";
 import ListarUsuarios from "./components/administrador/ListarUsuarios";
 import CrearEvento from "./components/administrador/CrearEvento";
-
+import DetalleEvento from "./components/administrador/DetalleEvento";
 // Función para verificar si el token ha expirado
 // Función para verificar si el token ha expirado
 const isTokenExpired = (token) => {
@@ -205,6 +205,7 @@ const App = () => {
 				>
 					<Route path="listar-usuarios" element={<ListarUsuarios />} />
 					<Route path="crear-evento" element={<CrearEvento />} />
+					<Route path="detalle-evento/:id" element={<DetalleEvento />} />
 				</Route>
 
 				{/* Login exclusivo para administradores */}

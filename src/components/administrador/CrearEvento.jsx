@@ -4,7 +4,7 @@ import usuariosAxios from "../../config/axios"; // Cliente Axios configurado
 import { validarSesion } from "../../utils/ValidarSesion";
 import ReactQuill, { Quill } from "react-quill-new"; // Asegúrate de tener Quill importado
 import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
-
+import Swal from "sweetalert2"; // Importar SweetAlert2
 // Leaflet Imports
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -167,7 +167,7 @@ const CrearEvento = () => {
 		data.append("fecha_fin", formData.fecha_fin);
 		data.append("ubicacion", formData.ubicacion);
 		if (formData.imagenes) {
-			data.append("imagenes", formData.imagenes); // Adjuntar imagen solo si existe
+			data.append("imagenes", formData.imagenes);
 		}
 		data.append("tipo", formData.tipo);
 
@@ -182,7 +182,22 @@ const CrearEvento = () => {
 			setMensaje("✅ Evento creado con éxito");
 			console.log(response.data);
 
-			// Limpiar formulario
+			// Usar SweetAlert2 para confirmar si desea continuar con el siguiente paso
+			const { isConfirmed } = await Swal.fire({
+				title: "¡Evento creado con éxito!",
+				text: "¿Quieres continuar con el siguiente paso?",
+				icon: "success",
+				showCancelButton: true,
+				confirmButtonText: "Sí, continuar",
+				cancelButtonText: "No, cancelar",
+			});
+
+			if (isConfirmed) {
+				navigate(
+					`/bicentenario-dashboard/detalle-evento/${response.data.evento.id_evento}`
+				);
+			}
+
 			setFormData({
 				titulo: "",
 				descripcion: "",
@@ -195,7 +210,7 @@ const CrearEvento = () => {
 		} catch (error) {
 			console.error("Error al crear el evento:", error);
 			setMensaje("❌ Error al crear el evento");
-			if (validarSesion(error, navigate)) return; // Si la sesión expiró, no seguimos ejecutando
+			if (validarSesion(error, navigate)) return;
 		}
 	};
 
@@ -383,12 +398,6 @@ const CrearEvento = () => {
 
 						<div className="card-footer"></div>
 					</div>
-				</div>
-
-				{/* Aqui va el formulario dinamico en base al tipo de evento */}
-				<div className="col-md-6">
-					{/* Mostrar el FormularioDinamico según el tipo de evento */}
-					{formData.tipo && <FormularioDinamico tipo={formData.tipo} />}
 				</div>
 			</div>
 		</div>

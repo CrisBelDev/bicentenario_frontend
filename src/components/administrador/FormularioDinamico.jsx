@@ -67,15 +67,6 @@ const FormularioCultural = ({ onDataChange }) => {
 					modules={modules}
 				/>
 			</div>
-			<div className="mb-3">
-				<label className="form-label">Imagen</label>
-				<input
-					type="file"
-					className="form-control"
-					accept="image/*"
-					onChange={handleImageChange}
-				/>
-			</div>
 		</div>
 	);
 };
