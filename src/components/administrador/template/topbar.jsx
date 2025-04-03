@@ -25,7 +25,7 @@ const Topbar = ({ toggleSidebar }) => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+		<nav className="navbar navbar-expand navbar-light color-top-bar topbar mb-4 static-top shadow">
 			{/* Sidebar Toggle (Topbar) */}
 			<button
 				id="sidebarToggleTop"

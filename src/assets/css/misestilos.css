@@ -135,3 +135,8 @@ ol {
 	height: 200px;
 	margin-top: 5px;
 }
+.color-top-bar {
+	background-color: #011f26;
+
+	color: white;
+}
