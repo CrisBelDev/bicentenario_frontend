@@ -48,7 +48,7 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
 
 			{/* Nav Item - Listar Evento */}
 			<li className="nav-item">
-				<Link className="nav-link" to="listar-evento">
+				<Link className="nav-link" to="listar-eventos">
 					<i className="fas fa-fw fa-calendar-alt"></i>
 					<span>Lista de eventos</span>
 				</Link>
