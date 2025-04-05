@@ -5,20 +5,7 @@ import { validarSesion } from "../../utils/ValidarSesion";
 import ReactQuill from "react-quill-new"; // Asegúrate de tener Quill importado
 import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
 import Swal from "sweetalert2"; // Importar SweetAlert2
-// Leaflet Imports
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-const MapUpdater = ({ position }) => {
-	const map = useMap();
-	useEffect(() => {
-		map.setView(position); // Actualiza la vista del mapa a las nuevas coordenadas
-	}, [position, map]);
-
-	return null;
-};
+import Ubicacion from "./Ubicacion"; // Importa el componente Ubicacion
 
 const EditarEvento = () => {
 	const [editable, setEditable] = useState(false);
@@ -101,22 +88,6 @@ const EditarEvento = () => {
 			...prevData,
 			descripcion: value,
 		}));
-	};
-
-	// Manejar cambios en la ubicación
-	const handleUbicacionChange = (e) => {
-		const { value } = e.target;
-		setFormData((prevData) => ({
-			...prevData,
-			ubicacion: value,
-		}));
-
-		const coords = value.split(",").map((coord) => parseFloat(coord.trim()));
-		if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-			setMapPosition(coords);
-		} else {
-			setMensaje("❌ Ubicación inválida. Usa el formato 'latitud, longitud'.");
-		}
 	};
 
 	// Enviar formulario
@@ -215,21 +186,16 @@ const EditarEvento = () => {
 									</div>
 								))}
 
-								{/* Ubicación */}
-								<div className="mb-3">
-									<label className="form-label">
-										Ubicación (Latitud, Longitud)
-									</label>
-									<input
-										type="text"
-										className="form-control"
-										name="ubicacion"
-										value={formData.ubicacion}
-										onChange={handleUbicacionChange}
-										required
-									/>
-								</div>
+								{/* Ubicación con el componente Ubicacion */}
+								<Ubicacion
+									ubicacion={formData.ubicacion}
+									setUbicacion={(value) =>
+										setFormData({ ...formData, ubicacion: value })
+									}
+									setMensaje={setMensaje}
+								/>
 
+								{/* Tipo de evento */}
 								<div className="mb-3">
 									<label className="form-label">Tipo de evento</label>
 									<select
@@ -248,6 +214,7 @@ const EditarEvento = () => {
 									</select>
 								</div>
 
+								{/* Imágenes */}
 								<div className="mb-3">
 									<label className="form-label">Imágenes</label>
 									<input
@@ -285,6 +252,7 @@ const EditarEvento = () => {
 					</div>
 				</div>
 
+				{/* Vista previa */}
 				<div className="col-md-6">
 					<h2>Vista previa del evento</h2>
 					<div className="card mb-4 shadow">
@@ -295,48 +263,18 @@ const EditarEvento = () => {
 							{formData.imagenes ? (
 								<img
 									src={
-										formData.imagenes instanceof File
-											? URL.createObjectURL(formData.imagenes)
-											: formData.imagenes
+										formData.imagenes.startsWith("http")
+											? formData.imagenes
+											: `/uploads/${formData.imagenes}`
 									}
-									alt="Vista previa"
-									className="img-fluid mb-3"
+									alt="Imagen del evento"
+									className="img-fluid"
 								/>
 							) : (
-								<p className="text-muted">No se ha agregado una imagen</p>
+								<p>No hay imagen</p>
 							)}
-						</div>
-						<div className="card-body">
-							<div className="card-text">
-								{formData.descripcion ? (
-									<div
-										className="descripcion-preview"
-										dangerouslySetInnerHTML={{ __html: formData.descripcion }}
-									/>
-								) : (
-									"Agrega una descripción"
-								)}
-							</div>
-							<p className="card-text">
-								📍 Ubicación:
-								{formData.ubicacion && formData.ubicacion.includes(",") && (
-									<a
-										href={`https://www.google.com/maps?q=${formData.ubicacion}`}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="ms-2"
-									>
-										Ver en Google Maps
-									</a>
-								)}
-							</p>
-							<p className="card-text">
-								⏰ Inicio: {formData.fecha_inicio || "No definido"} <br />
-								🕒 Fin: {formData.fecha_fin || "No definido"}
-							</p>
-							<p className="card-text">
-								🎯 Tipo de evento: {formData.tipo || "Sin tipo"}
-							</p>
+
+							<p>{formData.descripcion || "No hay descripción aún"}</p>
 						</div>
 					</div>
 				</div>
