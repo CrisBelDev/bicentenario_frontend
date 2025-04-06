@@ -192,7 +192,7 @@ const EditarEvento = () => {
 							</div>
 							<div
 								id="collapseOne"
-								className="collapse "
+								className="collapse show"
 								aria-labelledby="headingOne"
 								data-bs-parent="#eventoAccordion"
 							>
@@ -337,7 +337,7 @@ const EditarEvento = () => {
 								data-bs-parent="#eventoAccordion"
 							>
 								<div className="card-body">
-									<FormularioEventoCultural id_evento={22} />
+									<FormularioEventoCultural id_evento={id} />
 								</div>
 							</div>
 						</div>
@@ -363,7 +363,7 @@ const EditarEvento = () => {
 							)}
 						</div>
 						<div className="card-body">
-							<p className="card-text">
+							<div className="card-text">
 								{eventoData && eventoData.descripcion ? (
 									<div
 										className="descripcion-preview"
@@ -372,7 +372,7 @@ const EditarEvento = () => {
 								) : (
 									"Agrega una descripción"
 								)}
-							</p>
+							</div>
 
 							<p className="card-text">
 								📍 Ubicación:

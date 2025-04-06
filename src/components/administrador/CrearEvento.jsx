@@ -31,6 +31,7 @@ const CrearEvento = () => {
 
 		imagenes: null,
 		tipo: "",
+		lugar: "",
 	});
 
 	const [mensaje, setMensaje] = useState("");
@@ -98,30 +99,27 @@ const CrearEvento = () => {
 
 	const handleSearchLocation = async () => {
 		if (!escribeUbicacion) {
-			console.log(escribeUbicacion);
 			setMensaje("❌ Ingresa una dirección.");
 			return;
 		}
 
 		try {
-			// Añadimos countrycodes=BO para limitar la búsqueda a Bolivia
-			// Añadimos el parámetro 'bounded=1' para limitar la búsqueda a las coordenadas de Bolivia
 			const response = await fetch(
-				`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-					escribeUbicacion
-				)}&countrycodes=BO&bounded=1&viewbox=-69.3,-22.9,-57.4,-9.5` // Coordenadas aproximadas para los límites de Bolivia
+				`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(
+					escribeUbicacion + " Bolivia"
+				)}&countrycodes=BO`
 			);
 			const data = await response.json();
 
 			if (data.length > 0) {
-				const { lat, lon } = data[0];
+				const { lat, lon, display_name } = data[0];
 				const coords = [parseFloat(lat), parseFloat(lon)];
-				setMapPosition(coords); // Actualizamos la ubicación en el mapa
+				setMapPosition(coords);
 				setFormData((prevData) => ({
 					...prevData,
-					ubicacion: `${lat}, ${lon}`, // Actualizamos las coordenadas en el formulario
+					ubicacion: `${lat}, ${lon}`,
 				}));
-				mostrarMensaje("✅ Ubicación encontrada.");
+				mostrarMensaje(`✅ Ubicación encontrada: ${display_name}`);
 			} else {
 				setMensaje("❌ No se encontró la dirección.");
 			}
@@ -166,6 +164,7 @@ const CrearEvento = () => {
 		data.append("fecha_inicio", formData.fecha_inicio);
 		data.append("fecha_fin", formData.fecha_fin);
 		data.append("ubicacion", formData.ubicacion);
+		data.append("lugar", escribeUbicacion);
 		if (formData.imagenes) {
 			data.append("imagenes", formData.imagenes);
 		}
@@ -206,6 +205,7 @@ const CrearEvento = () => {
 				ubicacion: "",
 				imagenes: null,
 				tipo: "",
+				lugar: "",
 			});
 		} catch (error) {
 			console.error("Error al crear el evento:", error);
@@ -305,7 +305,7 @@ const CrearEvento = () => {
 									<input
 										type="text"
 										className="form-control"
-										name="escribeUbicacion"
+										name="lugar"
 										placeholder="si prefieres escribe la direccion"
 										value={escribeUbicacion} // Asegúrate de que el input esté correctamente ligado al estado
 										onChange={handleEscribeUbicacionChange} // Captura el cambio

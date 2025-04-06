@@ -1,64 +1,69 @@
-// FormularioEventoCultural.jsx
-import React, { useState, useEffect } from "react";
-import ReactQuill from "react-quill-new"; // Asegúrate de tener Quill importado
-import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
-import usuariosAxios from "../../config/axios"; // Cliente Axios configurado
-import Swal from "sweetalert2"; // Importar SweetAlert2
+import React, { useState } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import usuariosAxios from "../../config/axios";
+import Swal from "sweetalert2";
 
 const FormularioEventoCultural = ({ id_evento }) => {
 	const [formData, setFormData] = useState({
+		titulo: "",
+		tipoEvento: "",
+		fechaInicio: "",
+		fechaFin: "",
+		lugar: "",
+		organizadoPor: "",
+		afichePromocional: null,
 		descripcion: "",
 	});
 
-	// Efecto para cargar la descripción del evento si el id_evento cambia
-	useEffect(() => {
-		if (id_evento) {
-			// Aquí hacemos la llamada a la API para obtener los datos del evento
-			usuariosAxios
-				.get(`/api/eventos/${id_evento}`) // Ajusta la ruta si es necesario
-				.then((response) => {
-					setFormData({
-						descripcion: response.data.descripcion || "", // Asegúrate de que el campo sea "descripcion"
-					});
-				})
-				.catch((error) => console.error("Error al cargar evento:", error));
+	const handleChange = (e) => {
+		const { name, value, files } = e.target;
+		if (name === "afichePromocional") {
+			setFormData({ ...formData, [name]: files[0] }); // ✅ Guardar solo el archivo
+		} else {
+			setFormData({ ...formData, [name]: value });
 		}
-	}, [id_evento]);
+	};
 
-	// Manejador de cambios en el campo de descripción
 	const handleDescripcionChange = (value) => {
 		setFormData({ ...formData, descripcion: value });
 	};
 
-	// Manejador del envío del formulario (usamos Axios para enviar los datos)
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-		// Añadir id_evento al formData antes de enviarlo
-		const dataToSend = {
-			...formData,
-			id_evento, // Agregar el id_evento al objeto de datos
-		};
+		const formDataToSend = new FormData();
+		formDataToSend.append("id_evento", id_evento);
+		formDataToSend.append("titulo", formData.titulo);
+		formDataToSend.append("tipoEvento", formData.tipoEvento);
+		formDataToSend.append("fechaInicio", formData.fechaInicio);
+		formDataToSend.append("fechaFin", formData.fechaFin);
+		formDataToSend.append("lugar", formData.lugar);
+		formDataToSend.append("organizadoPor", formData.organizadoPor);
+		formDataToSend.append("descripcion", formData.descripcion);
 
-		// Enviar los datos del formulario al backend
+		if (formData.afichePromocional) {
+			formDataToSend.append("afichePromocional", formData.afichePromocional);
+		}
+
 		usuariosAxios
-			.post(`/evento-cultural`, dataToSend) // Envía el formulario con el id_evento
+			.post("/evento-cultural", formDataToSend, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})
 			.then((response) => {
 				console.log("Evento registrado:", response.data);
-
-				// Mostrar alerta de éxito con SweetAlert2
 				Swal.fire({
 					icon: "success",
-					title: "¡Información adicional registrada exitosamente!",
-					text: "El evento ha sido actualizado correctamente.",
+					title: "¡Evento cultural registrado exitosamente!",
+					text: "El evento ha sido registrado correctamente.",
 					showConfirmButton: false,
-					timer: 1500, // La alerta desaparecerá después de 1.5 segundos
+					timer: 1500,
 				});
 			})
 			.catch((error) => {
 				console.error("Error al registrar evento:", error);
-
-				// Mostrar alerta de error en caso de fallo
 				Swal.fire({
 					icon: "error",
 					title: "Error al registrar evento",
@@ -70,17 +75,99 @@ const FormularioEventoCultural = ({ id_evento }) => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="mb-3">
+				<label className="form-label">Título del Evento</label>
+				<input
+					type="text"
+					className="form-control"
+					name="titulo"
+					value={formData.titulo}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Tipo de Evento</label>
+				<input
+					type="text"
+					className="form-control"
+					name="tipoEvento"
+					value={formData.tipoEvento}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Fecha de Inicio</label>
+				<input
+					type="datetime-local"
+					className="form-control"
+					name="fechaInicio"
+					value={formData.fechaInicio}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Fecha de Finalización</label>
+				<input
+					type="datetime-local"
+					className="form-control"
+					name="fechaFin"
+					value={formData.fechaFin}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Lugar</label>
+				<input
+					type="text"
+					className="form-control"
+					name="lugar"
+					value={formData.lugar}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Organizado por</label>
+				<input
+					type="text"
+					className="form-control"
+					name="organizadoPor"
+					value={formData.organizadoPor}
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
+				<label className="form-label">Afiche Promocional</label>
+				<input
+					type="file"
+					className="form-control"
+					name="afichePromocional"
+					onChange={handleChange}
+					required
+				/>
+			</div>
+
+			<div className="mb-3">
 				<label className="form-label">Descripción</label>
 				<ReactQuill
 					value={formData.descripcion}
 					onChange={handleDescripcionChange}
 					theme="snow"
-					required
 				/>
 			</div>
 
 			<button type="submit" className="btn btn-success">
-				Registrar
+				Registrar Evento
 			</button>
 		</form>
 	);
