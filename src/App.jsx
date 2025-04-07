@@ -22,13 +22,16 @@ import RecuperarPassword from "./components/usuarios/RecuperarPassword";
 import CambiarPassword from "./components/usuarios/CambiarPassword";
 import Dashboard from "./components/usuarios/dashboard";
 import Eventos from "./components/publico/eventos";
+import EventoInfo from "./components/publico/EventoInfo";
 // Dashboard
 import AdminDashboard from "./components/administrador/template/AdminDashboard";
 import LoginAdmin from "./components/administrador/LoginAdmin";
 import ListarUsuarios from "./components/administrador/ListarUsuarios";
 import CrearEvento from "./components/administrador/CrearEvento";
 import DetalleEvento from "./components/administrador/DetalleEvento";
+import DetalleEventoCultural from "./components/administrador/DetalleEventoCultural";
 import ListarEventos from "./components/administrador/ListarEventos";
+import ListarEventoCultural from "./components/administrador/ListarEventoCultural";
 // Función para verificar si el token ha expirado
 // Función para verificar si el token ha expirado
 const isTokenExpired = (token) => {
@@ -193,6 +196,15 @@ const App = () => {
 				<Route path="/recuperar-password" element={<RecuperarPassword />} />
 				<Route path="/cambiarpassword/" element={<CambiarPassword />} />
 
+				<Route
+					path="/eventos/info/:id"
+					element={
+						<>
+							<PublicNav />
+							<EventoInfo />
+						</>
+					}
+				/>
 				{/* Rutas para usuarios logueados */}
 				<Route
 					path="/dashboard"
@@ -207,7 +219,15 @@ const App = () => {
 					<Route path="listar-usuarios" element={<ListarUsuarios />} />
 					<Route path="crear-evento" element={<CrearEvento />} />
 					<Route path="detalle-evento/:id" element={<DetalleEvento />} />
+					<Route
+						path="detalle-evento-cultural/:id"
+						element={<DetalleEventoCultural />}
+					/>
 					<Route path="listar-eventos" element={<ListarEventos />} />
+					<Route
+						path="listar-eventos-cultural"
+						element={<ListarEventoCultural />}
+					/>
 				</Route>
 
 				{/* Login exclusivo para administradores */}

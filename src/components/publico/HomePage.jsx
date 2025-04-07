@@ -144,9 +144,7 @@ const HomePage = () => {
 				<section id="eventos" className="py-5">
 					<div className="container">
 						<div className="borderline"></div>
-						<h2 className="fw-bold text-center mb-4">
-							Eventos del Bicentenario
-						</h2>
+						<h2 className="fw-bold text-center mb-4">Eventos del Destacados</h2>
 
 						{loading ? (
 							<div className="text-center">
@@ -165,50 +163,66 @@ const HomePage = () => {
 						) : (
 							<div className="row gy-4">
 								{eventos.map((evento) => (
-									<div key={evento.id_evento} className="col-md-6 col-lg-4">
-										<div className="card h-100 shadow-sm">
-											{evento.imagenes && evento.imagenes.length > 0 ? (
-												<img
-													src={evento.imagenes[0]}
-													className="card-img-top"
-													alt={evento.titulo}
-													style={{ height: "300px", objectFit: "cover" }}
-												/>
-											) : (
-												<img
-													src="/img/no-image.jpg"
-													className="card-img-top"
-													alt="Sin imagen"
-													style={{ height: "200px", objectFit: "cover" }}
-												/>
-											)}
-
-											<div className="card-body d-flex flex-column">
-												<h5 className="card-title">{evento.titulo}</h5>
-												<div className="card-text">
-													<div
-														dangerouslySetInnerHTML={{
-															__html: evento.descripcion,
-														}}
+									<div key={evento.id_evento} className="col-6">
+										<div className="card h-100 shadow-sm d-flex flex-row">
+											{/* Imagen a la izquierda */}
+											<div style={{ width: "40%", maxWidth: "300px" }}>
+												{evento.imagenes && evento.imagenes.length > 0 ? (
+													<img
+														src={evento.imagenes[0]}
+														className="img-fluid h-100"
+														alt={evento.titulo}
+														style={{ objectFit: "cover", width: "100%" }}
 													/>
-												</div>
-												<p className="text-muted small mt-auto">
-													📍 {evento.ubicacion} <br />
-													📅{" "}
-													{new Date(
-														evento.fecha_inicio
-													).toLocaleDateString()} -{" "}
-													{new Date(evento.fecha_fin).toLocaleDateString()}
-												</p>
+												) : (
+													<img
+														src="/img/no-image.jpg"
+														className="img-fluid h-100"
+														alt="Sin imagen"
+														style={{ objectFit: "cover", width: "100%" }}
+													/>
+												)}
 											</div>
 
-											<div className="card-footer bg-white border-0">
-												<a
-													href={`/evento/${evento.id_evento}`}
-													className="btn btn-sm btn-primary w-100"
-												>
-													Ver Detalles
-												</a>
+											{/* Contenido a la derecha */}
+											<div
+												className="card-body d-flex flex-column justify-content-between"
+												style={{ width: "60%" }}
+											>
+												<div>
+													<h5 className="text-center">{evento.titulo} </h5>
+													<div className="card-text mb-2">
+														<div
+															dangerouslySetInnerHTML={{
+																__html: evento.descripcion,
+															}}
+														/>
+													</div>
+													<p className="text-muted small">
+														📍{" "}
+														<a
+															href={`https://www.google.com/maps?q=${evento.ubicacion}`}
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															Ver en Google Maps
+														</a>
+														<br />
+														📅 {new Date(
+															evento.fecha_inicio
+														).toLocaleString()}{" "}
+														- {new Date(evento.fecha_fin).toLocaleString()}
+													</p>
+												</div>
+
+												<div className="mt-3">
+													<Link
+														to={`/eventos/info/${evento.id_evento}`}
+														className="btn  btn-sm btn-primary"
+													>
+														Ver Detalles
+													</Link>
+												</div>
 											</div>
 										</div>
 									</div>

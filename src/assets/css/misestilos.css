@@ -150,3 +150,108 @@ ol {
 		max-width: 90%; /* Se adapta completamente al ancho disponible */
 	}
 }
+/*estilos de agenda*/
+/* Estilos para la agenda de eventos */
+.agenda-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.agenda-item {
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.card-header {
+	background-color: #007bff;
+	color: white;
+	text-align: center;
+}
+.card-header h5 {
+	color: white;
+}
+.bg-info {
+	--bs-bg-opacity: 1;
+	background-color: rgb(70 70 70) !important;
+}
+.card-body {
+	padding: 20px;
+	background-color: #f9f9f9;
+}
+
+.event-details {
+	font-size: 1.1em;
+	line-height: 1.6;
+	margin-bottom: 15px;
+}
+
+.event-date {
+	margin-bottom: 8px;
+	font-weight: bold;
+	color: #555;
+}
+
+.event-poster img {
+	max-width: 100%;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-footer {
+	background-color: #e9ecef;
+	padding: 10px;
+	text-align: center;
+}
+
+h3 {
+	font-size: 1.8em;
+	margin-bottom: 20px;
+}
+
+h2 {
+	font-size: 2.2em;
+	margin-bottom: 30px;
+	color: #333;
+}
+
+.text-center {
+	text-align: center;
+}
+.fondo_eventos {
+	background-image: url("/img/home.png");
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 100vw;
+	position: relative;
+}
+
+.titulo_evento h2,
+.titulo_evento h4 {
+	color: rgb(255, 204, 1); /* Color de texto dorado */
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6); /* Sombra en el texto */
+}
+
+.titulo_evento h2 {
+	font-size: 2.5rem; /* Título más grande */
+	font-weight: bold;
+}
+
+.titulo_evento h4 {
+	font-size: 1.8rem; /* Título secundario con un tamaño más pequeño */
+	font-weight: normal;
+}
+
+.fondo_eventos::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-color: rgba(34, 34, 34, 0.1); /* negro con 50% de opacidad */
+	z-index: 1;
+}
+
+.fondo_eventos > * {
+	position: relative;
+	z-index: 2;
+}

@@ -10,20 +10,17 @@ const Eventos = () => {
 	const [error, setError] = useState(null);
 	const [totalPaginas, setTotalPaginas] = useState(1);
 
-	// Convertir `pagina` a número asegurando que es válido
 	let paginaActual = parseInt(pagina, 10);
 	if (isNaN(paginaActual) || paginaActual < 1) {
 		paginaActual = 1;
 	}
 
-	// Redirigir si la página en la URL no es válida
 	useEffect(() => {
 		if (!pagina || isNaN(paginaActual) || paginaActual < 1) {
 			navigate(`/eventos/1`, { replace: true });
 		}
 	}, [pagina, navigate]);
 
-	// Cargar eventos desde la API cuando cambia la página
 	useEffect(() => {
 		const fetchEventos = async () => {
 			setLoading(true);
@@ -34,7 +31,6 @@ const Eventos = () => {
 
 				const eventosBackend = response.data.eventos || [];
 
-				// Procesar imágenes correctamente
 				const eventosProcesados = eventosBackend.map((evento) => ({
 					...evento,
 					imagenes: evento.imagenes
@@ -54,7 +50,6 @@ const Eventos = () => {
 		fetchEventos();
 	}, [pagina]);
 
-	// Cálculo de las páginas anterior y siguiente
 	const paginaAnterior = paginaActual > 1 ? paginaActual - 1 : 1;
 	const paginaSiguiente =
 		paginaActual < totalPaginas ? paginaActual + 1 : totalPaginas;
@@ -80,37 +75,66 @@ const Eventos = () => {
 						) : (
 							<div className="row gy-4">
 								{eventos.map((evento) => (
-									<div key={evento.id_evento} className="col-md-6 col-lg-4">
-										<div className="card h-100 shadow-sm">
-											<img
-												src={evento.imagenes[0] || "/img/no-image.jpg"}
-												className="card-img-top"
-												alt={evento.titulo}
-												style={{ height: "300px", objectFit: "cover" }}
-											/>
-											<div className="card-body d-flex flex-column">
-												<h5 className="card-title">{evento.titulo}</h5>
-												<div
-													dangerouslySetInnerHTML={{
-														__html: evento.descripcion,
-													}}
-												/>
-												<p className="text-muted small mt-auto">
-													📍 {evento.ubicacion} <br />
-													📅{" "}
-													{new Date(
-														evento.fecha_inicio
-													).toLocaleDateString()} -{" "}
-													{new Date(evento.fecha_fin).toLocaleDateString()}
-												</p>
+									<div key={evento.id_evento} className="col-6">
+										<div className="card h-100 shadow-sm d-flex flex-row">
+											{/* Imagen a la izquierda */}
+											<div style={{ width: "40%", maxWidth: "300px" }}>
+												{evento.imagenes && evento.imagenes.length > 0 ? (
+													<img
+														src={evento.imagenes[0]}
+														className="img-fluid h-100"
+														alt={evento.titulo}
+														style={{ objectFit: "cover", width: "100%" }}
+													/>
+												) : (
+													<img
+														src="/img/no-image.jpg"
+														className="img-fluid h-100"
+														alt="Sin imagen"
+														style={{ objectFit: "cover", width: "100%" }}
+													/>
+												)}
 											</div>
-											<div className="card-footer bg-white border-0">
-												<Link
-													to={`/evento/${evento.id_evento}`}
-													className="btn btn-sm btn-primary w-100"
-												>
-													Ver Detalles
-												</Link>
+
+											{/* Contenido a la derecha */}
+											<div
+												className="card-body d-flex flex-column justify-content-between"
+												style={{ width: "60%" }}
+											>
+												<div>
+													<h5 className="text-center">{evento.titulo} </h5>
+													<div className="card-text mb-2">
+														<div
+															dangerouslySetInnerHTML={{
+																__html: evento.descripcion,
+															}}
+														/>
+													</div>
+													<p className="text-muted small">
+														📍{" "}
+														<a
+															href={`https://www.google.com/maps?q=${evento.ubicacion}`}
+															target="_blank"
+															rel="noopener noreferrer"
+														>
+															Ver en Google Maps
+														</a>
+														<br />
+														📅 {new Date(
+															evento.fecha_inicio
+														).toLocaleString()}{" "}
+														- {new Date(evento.fecha_fin).toLocaleString()}
+													</p>
+												</div>
+
+												<div className="mt-3">
+													<Link
+														to={`/eventos/info/${evento.id_evento}`}
+														className="btn  btn-sm btn-primary"
+													>
+														Ver Detalles
+													</Link>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -118,8 +142,6 @@ const Eventos = () => {
 							</div>
 						)}
 
-						{/* Paginación */}
-						{/* Paginación */}
 						{eventos.length > 0 && !loading && !error && (
 							<div className="text-center mt-4">
 								<div className="d-flex justify-content-center">
