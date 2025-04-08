@@ -6,6 +6,7 @@ import ReactQuill from "react-quill-new"; // Asegúrate de tener Quill importado
 import "react-quill-new/dist/quill.snow.css"; // Estilos de Quill
 import Swal from "sweetalert2"; // Importar SweetAlert2
 import Ubicacion from "./Ubicacion"; // Importa el componente Ubicacion
+import EtniasCheckbox from "./EtniasCheckbox"; // Importa el componente EtniasCheckbox
 
 const EditarEventoCultural = () => {
 	const [editable, setEditable] = useState(false);
@@ -19,6 +20,7 @@ const EditarEventoCultural = () => {
 		afiche_promocional: null,
 		organizado_por: "",
 		lugar: "",
+		etniasSeleccionadas: [], // Agrega un estado para las etnias seleccionadas
 	});
 
 	const [mensaje, setMensaje] = useState("");
@@ -66,6 +68,7 @@ const EditarEventoCultural = () => {
 					afiche_promocional: eventData.afiche_promocional,
 					organizado_por: eventData.organizado_por,
 					lugar: eventData.lugar,
+					etniasSeleccionadas: eventData.etnias || [], // Asume que las etnias seleccionadas están en el evento
 				});
 
 				setEventoData(eventData); // Guardamos los datos del evento para la vista previa
@@ -99,6 +102,14 @@ const EditarEventoCultural = () => {
 			setEventoData(updatedData); // Actualizamos eventoData para la vista previa
 			return updatedData;
 		});
+	};
+
+	// Manejar cambios en las etnias seleccionadas
+	const handleEtniasChange = (etniasSeleccionadas) => {
+		setFormData((prevData) => ({
+			...prevData,
+			etniasSeleccionadas, // Actualiza las etnias seleccionadas en el estado
+		}));
 	};
 
 	// Validación antes de enviar el formulario
@@ -141,6 +152,9 @@ const EditarEventoCultural = () => {
 			data.append("afiche_promocional", formData.afiche_promocional);
 		}
 		data.append("organizado_por", formData.organizado_por);
+		const datos_check = JSON.stringify(formData.etniasSeleccionadas);
+		console.log("datos que enviare al backend: ", datos_check);
+		data.append("etnias", datos_check); // Agrega las etnias seleccionadas
 
 		try {
 			const response = await usuariosAxios.put(`/evento-cultural/${id}`, data, {
@@ -266,6 +280,12 @@ const EditarEventoCultural = () => {
 												accept="image/*"
 											/>
 										</div>
+
+										{/* Componente EtniasCheckbox */}
+										<EtniasCheckbox
+											selectedEtnias={formData.etniasSeleccionadas}
+											onChange={handleEtniasChange}
+										/>
 
 										{/* Botón para activar edición (solo se muestra cuando no está en modo edición) */}
 										{!editable && (
