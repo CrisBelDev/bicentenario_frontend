@@ -282,10 +282,10 @@ const EditarEventoCultural = () => {
 										</div>
 
 										{/* Componente EtniasCheckbox */}
-										<EtniasCheckbox
+										{/* <EtniasCheckbox
 											selectedEtnias={formData.etniasSeleccionadas}
 											onChange={handleEtniasChange}
-										/>
+										/> */}
 
 										{/* Botón para activar edición (solo se muestra cuando no está en modo edición) */}
 										{!editable && (

@@ -40,10 +40,10 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
 
 			{/* Nav Item - Crear Evento */}
 			<li className="nav-item">
-				<Link className="nav-link" to="crear-evento">
+				<a className="nav-link" href="/bicentenario-dashboard/crear-evento">
 					<i className="fas fa-fw fa-calendar-plus"></i>
 					<span>Crear Evento</span>
-				</Link>
+				</a>
 			</li>
 
 			{/* Nav Item - Listar Evento */}

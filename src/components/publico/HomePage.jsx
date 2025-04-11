@@ -161,25 +161,33 @@ const HomePage = () => {
 								No hay eventos disponibles en este momento.
 							</p>
 						) : (
-							<div className="row gy-4">
+							<div className="row gy-4 d-flex justify-content-center">
 								{eventos.map((evento) => (
-									<div key={evento.id_evento} className="col-6">
+									<div key={evento.id_evento} className="col-12">
 										<div className="card h-100 shadow-sm d-flex flex-row">
 											{/* Imagen a la izquierda */}
 											<div style={{ width: "40%", maxWidth: "300px" }}>
 												{evento.imagenes && evento.imagenes.length > 0 ? (
 													<img
 														src={evento.imagenes[0]}
-														className="img-fluid h-100"
+														className="img-fluid"
 														alt={evento.titulo}
-														style={{ objectFit: "cover", width: "100%" }}
+														style={{
+															objectFit: "cover",
+															width: "100%",
+															height: "auto",
+														}}
 													/>
 												) : (
 													<img
 														src="/img/no-image.jpg"
-														className="img-fluid h-100"
+														className="img-fluid"
 														alt="Sin imagen"
-														style={{ objectFit: "cover", width: "100%" }}
+														style={{
+															objectFit: "cover",
+															width: "100%",
+															height: "auto",
+														}}
 													/>
 												)}
 											</div>
@@ -199,7 +207,7 @@ const HomePage = () => {
 														/>
 													</div>
 													<p className="text-muted small">
-														📍{" "}
+														📍{evento.lugar} <br />
 														<a
 															href={`https://www.google.com/maps?q=${evento.ubicacion}`}
 															target="_blank"
@@ -214,8 +222,29 @@ const HomePage = () => {
 														- {new Date(evento.fecha_fin).toLocaleString()}
 													</p>
 												</div>
+												<div className="mb-1">
+													{evento.patrocinadors &&
+														evento.patrocinadors.length > 0 && (
+															<>
+																<h6 className="fw-bold text-primary">
+																	Patrocinadores:
+																</h6>
+																<div className="d-flex flex-wrap">
+																	{evento.patrocinadors.map((patrocinador) => (
+																		<div
+																			key={patrocinador.id_patrocinador}
+																			className="d-flex align-items-center me-4 mb-2 fw-bold"
+																		>
+																			<i className="bi bi-patch-check-fill text-success me-2"></i>
+																			{patrocinador.nombre}
+																		</div>
+																	))}
+																</div>
+															</>
+														)}
+												</div>
 
-												<div className="mt-3">
+												<div className="">
 													<Link
 														to={`/eventos/info/${evento.id_evento}`}
 														className="btn  btn-sm btn-primary"

@@ -110,12 +110,15 @@ function ListarEventos() {
 			name: "Acciones",
 			cell: (row) => (
 				<div className="d-flex gap-1">
-					<Link
-						to={`/bicentenario-dashboard/detalle-evento/${row.id_evento}`}
+					<button
+						onClick={() =>
+							(window.location.href = `/bicentenario-dashboard/detalle-evento/${row.id_evento}`)
+						}
 						className="btn btn-sm btn-primary"
 					>
 						<i className="fas fa-pen-alt"></i>
-					</Link>
+					</button>
+
 					<button
 						type="button"
 						className="btn btn-sm btn-danger"

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
 	GoogleMap,
-	Marker,
+	MarkerF,
 	useJsApiLoader,
 	Autocomplete,
 } from "@react-google-maps/api";
@@ -40,6 +40,7 @@ const CrearEvento = () => {
 	const [autocomplete, setAutocomplete] = useState(null);
 	const [geocoder, setGeocoder] = useState(null);
 	const [isApiLoaded, setIsApiLoaded] = useState(false);
+	const markerRef = useRef(null);
 	const navigate = useNavigate();
 	const token = localStorage.getItem("tokenLogin");
 
@@ -47,6 +48,7 @@ const CrearEvento = () => {
 		if (!token) navigate("/");
 	}, [token, navigate]);
 
+	// Usamos el cargador para cargar la API de Google Maps y la biblioteca "places" de forma dinámica
 	const { isLoaded } = useJsApiLoader({
 		googleMapsApiKey: import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY,
 		libraries: ["places", "geometry"],
@@ -54,9 +56,17 @@ const CrearEvento = () => {
 
 	useEffect(() => {
 		if (isLoaded) {
-			const geo = new window.google.maps.Geocoder();
-			setGeocoder(geo);
-			setIsApiLoaded(true);
+			const loadPlacesLibrary = async () => {
+				try {
+					const { places } = await google.maps.importLibrary("places");
+					const geo = new window.google.maps.Geocoder();
+					setGeocoder(geo);
+					setIsApiLoaded(true);
+				} catch (error) {
+					console.error("Error cargando la biblioteca places", error);
+				}
+			};
+			loadPlacesLibrary();
 		}
 	}, [isLoaded]);
 
@@ -75,7 +85,7 @@ const CrearEvento = () => {
 	const handleUbicacionChange = (e) => {
 		const { value } = e.target;
 		console.log("data ", value);
-		setFormData((prev) => ({ ...prev, lugar: value })); // Actualiza 'lugar'
+		setFormData((prev) => ({ ...prev, lugar: value }));
 		setEscribeUbicacion(value);
 	};
 
@@ -101,10 +111,8 @@ const CrearEvento = () => {
 
 		if (!token) return setMensaje("❌ No se encontró el token. Inicia sesión.");
 
-		// Crear FormData para enviar los datos al backend
 		const data = new FormData();
 		Object.keys(formData).forEach((key) => {
-			console.log(`${key}: ${formData[key]}`);
 			if (formData[key]) data.append(key, formData[key]);
 		});
 
@@ -132,7 +140,6 @@ const CrearEvento = () => {
 					);
 				}
 
-				// Limpiar el formulario después de enviar
 				setFormData({
 					titulo: "",
 					descripcion: "",
@@ -163,7 +170,6 @@ const CrearEvento = () => {
 						</div>
 						<div className="card-body">
 							<form onSubmit={handleSubmit}>
-								{/* Formulario de entrada */}
 								<div className="mb-3">
 									<label className="form-label">Título</label>
 									<input
@@ -224,6 +230,7 @@ const CrearEvento = () => {
 														setFormData((prev) => ({
 															...prev,
 															ubicacion: `${lat}, ${lng}`,
+															lugar: place.formatted_address,
 														}));
 														setEscribeUbicacion(place.formatted_address || "");
 														setMensaje(
@@ -280,10 +287,11 @@ const CrearEvento = () => {
 											zoom={15}
 											onClick={handleMapClick}
 										>
-											<Marker
+											<MarkerF
 												position={mapPosition}
 												draggable
 												onDragEnd={handleMapClick}
+												ref={markerRef}
 											/>
 										</GoogleMap>
 									)}
