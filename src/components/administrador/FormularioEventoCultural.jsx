@@ -1,79 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import usuariosAxios from "../../config/axios";
-import Swal from "sweetalert2";
 
-const FormularioEventoCultural = ({ id_evento }) => {
-	const [formData, setFormData] = useState({
-		titulo: "",
-		tipoEvento: "",
-		fechaInicio: "",
-		fechaFin: "",
-		lugar: "",
-		organizadoPor: "",
-		afichePromocional: null,
-		descripcion: "",
-	});
-
+const FormularioEventoCultural = ({ formData, setFormData, onSubmit }) => {
 	const handleChange = (e) => {
 		const { name, value, files } = e.target;
 		if (name === "afichePromocional") {
-			setFormData({ ...formData, [name]: files[0] }); // ✅ Guardar solo el archivo
+			setFormData((prev) => ({ ...prev, [name]: files[0] }));
 		} else {
-			setFormData({ ...formData, [name]: value });
+			setFormData((prev) => ({ ...prev, [name]: value }));
 		}
 	};
 
 	const handleDescripcionChange = (value) => {
-		setFormData({ ...formData, descripcion: value });
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-
-		const formDataToSend = new FormData();
-		formDataToSend.append("id_evento", id_evento);
-		formDataToSend.append("titulo", formData.titulo);
-		formDataToSend.append("tipoEvento", formData.tipoEvento);
-		formDataToSend.append("fechaInicio", formData.fechaInicio);
-		formDataToSend.append("fechaFin", formData.fechaFin);
-		formDataToSend.append("lugar", formData.lugar);
-		formDataToSend.append("organizadoPor", formData.organizadoPor);
-		formDataToSend.append("descripcion", formData.descripcion);
-
-		if (formData.afichePromocional) {
-			formDataToSend.append("afichePromocional", formData.afichePromocional);
-		}
-
-		usuariosAxios
-			.post("/evento-cultural", formDataToSend, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			})
-			.then((response) => {
-				console.log("Evento registrado:", response.data);
-				Swal.fire({
-					icon: "success",
-					title: "¡Evento cultural registrado exitosamente!",
-					text: "El evento ha sido registrado correctamente.",
-					showConfirmButton: false,
-					timer: 1500,
-				});
-			})
-			.catch((error) => {
-				console.error("Error al registrar evento:", error);
-				Swal.fire({
-					icon: "error",
-					title: "Error al registrar evento",
-					text: "Hubo un problema al registrar la información del evento.",
-				});
-			});
+		setFormData((prev) => ({ ...prev, descripcion: value }));
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={onSubmit}>
 			<div className="mb-3">
 				<label className="form-label">Título del Evento</label>
 				<input
