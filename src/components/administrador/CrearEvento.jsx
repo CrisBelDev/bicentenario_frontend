@@ -11,6 +11,7 @@ import { validarSesion } from "../../utils/ValidarSesion";
 import Swal from "sweetalert2";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import ModalPatrocinadores from "./helpers/ModalPatrocinadores";
 
 const containerStyle = {
 	width: "100%",
@@ -23,6 +24,12 @@ const defaultCenter = {
 };
 
 const CrearEvento = () => {
+	const [showModal, setShowModal] = useState(false);
+	const [selectedPatrocinadores, setSelectedPatrocinadores] = useState([]);
+
+	const handlePatrocinadoresSelect = (selectedOptions) => {
+		setSelectedPatrocinadores(selectedOptions);
+	};
 	const [formData, setFormData] = useState({
 		titulo: "",
 		descripcion: "",
@@ -115,8 +122,12 @@ const CrearEvento = () => {
 		Object.keys(formData).forEach((key) => {
 			if (formData[key]) data.append(key, formData[key]);
 		});
+		if (selectedPatrocinadores.length > 0) {
+			data.append("patrocinadores", JSON.stringify(selectedPatrocinadores));
+		}
 
 		try {
+			console.log("data ", data);
 			const res = await usuariosAxios.post("/evento/registrar", data, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -161,157 +172,191 @@ const CrearEvento = () => {
 	};
 
 	return (
-		<div className="container mt-4">
-			<div className="row">
-				<div className="col-md-6">
-					<div className="card mb-4 shadow">
-						<div className="card-header bg-primary text-white">
-							<h3>Crear Evento</h3>
-						</div>
-						<div className="card-body">
-							<form onSubmit={handleSubmit}>
-								<div className="mb-3">
-									<label className="form-label">Título</label>
-									<input
-										type="text"
-										className="form-control"
-										name="titulo"
-										value={formData.titulo}
-										onChange={handleChange}
-									/>
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">Descripción</label>
-									<ReactQuill
-										value={formData.descripcion}
-										onChange={handleDescripcionChange}
-										theme="snow"
-										required
-									/>
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">Fecha de Inicio</label>
-									<input
-										type="datetime-local"
-										className="form-control"
-										name="fecha_inicio"
-										value={formData.fecha_inicio}
-										onChange={handleChange}
-									/>
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">Fecha de Finalización</label>
-									<input
-										type="datetime-local"
-										className="form-control"
-										name="fecha_fin"
-										value={formData.fecha_fin}
-										onChange={handleChange}
-									/>
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">
-										Ubicación (buscador de Google)
-									</label>
-									{isLoaded && (
-										<Autocomplete
-											onLoad={(auto) => setAutocomplete(auto)}
-											onPlaceChanged={() => {
-												if (autocomplete) {
-													const place = autocomplete.getPlace();
-													if (place.geometry && place.geometry.location) {
-														const lat = place.geometry.location.lat();
-														const lng = place.geometry.location.lng();
-														setMapPosition({ lat, lng });
-														setFormData((prev) => ({
-															...prev,
-															ubicacion: `${lat}, ${lng}`,
-															lugar: place.formatted_address,
-														}));
-														setEscribeUbicacion(place.formatted_address || "");
-														setMensaje(
-															"✅ Ubicación seleccionada correctamente."
-														);
-													} else {
-														setMensaje("❌ No se pudo obtener la ubicación.");
-													}
-												}
-											}}
+		<>
+			<ModalPatrocinadores
+				showModal={showModal}
+				setShowModal={setShowModal}
+				onSelectPatrocinadores={handlePatrocinadoresSelect}
+			/>
+			<div className="container mt-4">
+				<div className="row">
+					<div className="col-md-6">
+						<div className="card mb-4 shadow">
+							<div className="card-header bg-primary text-white">
+								<h3>Crear Evento</h3>
+							</div>
+							<div className="card-body">
+								<form onSubmit={handleSubmit}>
+									<div className="mb-3">
+										<label className="form-label">Título</label>
+										<input
+											type="text"
+											className="form-control"
+											name="titulo"
+											value={formData.titulo}
+											onChange={handleChange}
+										/>
+									</div>
+									<div className="mb-3">
+										<label className="form-label">Tipo de Evento</label>
+										<select
+											className="form-control"
+											name="tipo"
+											value={formData.tipo}
+											onChange={handleChange}
 										>
+											<option value="">Seleccione el tipo de evento</option>
+											<option value="cultural">Cultural</option>
+											<option value="deportivo">Deportivo</option>
+											<option value="académico">Académico</option>
+										</select>
+									</div>
+
+									<div className="mb-3">
+										<label className="form-label">Descripción</label>
+										<ReactQuill
+											value={formData.descripcion}
+											onChange={handleDescripcionChange}
+											theme="snow"
+											required
+										/>
+									</div>
+
+									<div className="row mb-3">
+										<div className="col-md-6">
+											<label className="form-label">Fecha de Inicio</label>
 											<input
-												type="text"
-												name="lugar"
+												type="datetime-local"
 												className="form-control"
-												placeholder="Escribe una dirección..."
-												value={escribeUbicacion}
-												onChange={handleUbicacionChange}
+												name="fecha_inicio"
+												value={formData.fecha_inicio}
+												onChange={handleChange}
 											/>
-										</Autocomplete>
-									)}
-								</div>
+										</div>
 
-								<div className="mb-3">
-									<label className="form-label">Imagen del Evento</label>
-									<input
-										type="file"
-										className="form-control"
-										name="imagenes"
-										onChange={handleChange}
-									/>
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">Tipo de Evento</label>
-									<select
-										className="form-control"
-										name="tipo"
-										value={formData.tipo}
-										onChange={handleChange}
-									>
-										<option value="">Seleccione el tipo de evento</option>
-										<option value="cultural">Cultural</option>
-										<option value="deportivo">Deportivo</option>
-										<option value="académico">Académico</option>
-									</select>
-								</div>
-
-								<div className="mt-3">
-									{isLoaded && (
-										<GoogleMap
-											mapContainerStyle={containerStyle}
-											center={mapPosition}
-											zoom={15}
-											onClick={handleMapClick}
-										>
-											<MarkerF
-												position={mapPosition}
-												draggable
-												onDragEnd={handleMapClick}
-												ref={markerRef}
+										<div className="col-md-6">
+											<label className="form-label">
+												Fecha de Finalización
+											</label>
+											<input
+												type="datetime-local"
+												className="form-control"
+												name="fecha_fin"
+												value={formData.fecha_fin}
+												onChange={handleChange}
 											/>
-										</GoogleMap>
+										</div>
+									</div>
+
+									<div>
+										<div className="mb-4">
+											<hr />
+											<div className="d-flex justify-content-between align-items-center mb-2">
+												<h5 className="mb-0 text-primary">Patrocinadores</h5>
+												<button
+													className="btn btn-primary d-flex align-items-center ml-1 px-4 py-2 rounded-pill shadow-sm"
+													onClick={() => setShowModal(true)}
+												>
+													<i className="bi bi-plus-circle mr-2"></i>
+													Agregar Patrocinadores
+												</button>
+											</div>
+
+											<p className="text-muted">
+												Patrocinadores seleccionados:{" "}
+												<span className="fw-semibold text-dark">
+													{selectedPatrocinadores.length}
+												</span>
+											</p>
+											<hr />
+										</div>
+									</div>
+									<div className="mb-3">
+										<label className="form-label">
+											Ubicación (buscador de Google)
+										</label>
+										{isLoaded && (
+											<Autocomplete
+												onLoad={(auto) => setAutocomplete(auto)}
+												onPlaceChanged={() => {
+													if (autocomplete) {
+														const place = autocomplete.getPlace();
+														if (place.geometry && place.geometry.location) {
+															const lat = place.geometry.location.lat();
+															const lng = place.geometry.location.lng();
+															setMapPosition({ lat, lng });
+															setFormData((prev) => ({
+																...prev,
+																ubicacion: `${lat}, ${lng}`,
+																lugar: place.formatted_address,
+															}));
+															setEscribeUbicacion(
+																place.formatted_address || ""
+															);
+															setMensaje(
+																"✅ Ubicación seleccionada correctamente."
+															);
+														} else {
+															setMensaje("❌ No se pudo obtener la ubicación.");
+														}
+													}
+												}}
+											>
+												<input
+													type="text"
+													name="lugar"
+													className="form-control"
+													placeholder="Escribe una dirección..."
+													value={escribeUbicacion}
+													onChange={handleUbicacionChange}
+												/>
+											</Autocomplete>
+										)}
+									</div>
+
+									<div className="mt-3">
+										{isLoaded && (
+											<GoogleMap
+												mapContainerStyle={containerStyle}
+												center={mapPosition}
+												zoom={15}
+												onClick={handleMapClick}
+											>
+												<MarkerF
+													position={mapPosition}
+													draggable
+													onDragEnd={handleMapClick}
+													ref={markerRef}
+												/>
+											</GoogleMap>
+										)}
+									</div>
+
+									<div className="mt-3">
+										<label className="form-label">Imagen del Evento</label>
+										<input
+											type="file"
+											className="form-control"
+											name="imagenes"
+											onChange={handleChange}
+										/>
+									</div>
+
+									<div className="mt-4">
+										<button type="submit" className="btn btn-primary">
+											Crear Evento
+										</button>
+									</div>
+									{mensaje && (
+										<div className="alert alert-info mt-3">{mensaje}</div>
 									)}
-								</div>
-
-								{mensaje && (
-									<div className="alert alert-info mt-3">{mensaje}</div>
-								)}
-
-								<div className="mt-4">
-									<button type="submit" className="btn btn-primary">
-										Crear Evento
-									</button>
-								</div>
-							</form>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
