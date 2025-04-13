@@ -13,6 +13,12 @@ import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import ModalPatrocinadores from "./helpers/ModalPatrocinadores";
 
+//aqui van los formularios dinamicos
+import ContenedorFormularioCultural from "./ContenedorFormularioCultural";
+import ContenedorFormularioGastronomico from "./ContenedorFormularioGastronomico ";
+import ContenedorFormularioAcademico from "./ContenedorFormularioAcademico";
+import ContenedorFormularioDeportivo from "./ContenedorFormularioDeportivo ";
+//---------------------------------
 const containerStyle = {
 	width: "100%",
 	height: "400px",
@@ -26,6 +32,7 @@ const defaultCenter = {
 const CrearEvento = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [selectedPatrocinadores, setSelectedPatrocinadores] = useState([]);
+	const [id_evento, setIdEvento] = useState(null);
 
 	const handlePatrocinadoresSelect = (selectedOptions) => {
 		setSelectedPatrocinadores(selectedOptions);
@@ -135,6 +142,8 @@ const CrearEvento = () => {
 				},
 			});
 
+			setIdEvento(res.data.evento.id_evento);
+
 			if (res.status === 201 && res.data && res.data.evento) {
 				const { isConfirmed } = await Swal.fire({
 					title: "¡Evento creado!",
@@ -180,6 +189,7 @@ const CrearEvento = () => {
 			/>
 			<div className="container mt-4">
 				<div className="row">
+					{/* Columna izquierda - formulario actual */}
 					<div className="col-md-6">
 						<div className="card mb-4 shadow">
 							<div className="card-header bg-primary text-white">
@@ -206,9 +216,10 @@ const CrearEvento = () => {
 											onChange={handleChange}
 										>
 											<option value="">Seleccione el tipo de evento</option>
+											<option value="academico">Académico</option>
 											<option value="cultural">Cultural</option>
 											<option value="deportivo">Deportivo</option>
-											<option value="académico">Académico</option>
+											<option value="gastronomico">Gastronomico</option>
 										</select>
 									</div>
 
@@ -248,29 +259,28 @@ const CrearEvento = () => {
 										</div>
 									</div>
 
-									<div>
-										<div className="mb-4">
-											<hr />
-											<div className="d-flex justify-content-between align-items-center mb-2">
-												<h5 className="mb-0 text-primary">Patrocinadores</h5>
-												<button
-													className="btn btn-primary d-flex align-items-center ml-1 px-4 py-2 rounded-pill shadow-sm"
-													onClick={() => setShowModal(true)}
-												>
-													<i className="bi bi-plus-circle mr-2"></i>
-													Agregar Patrocinadores
-												</button>
-											</div>
-
-											<p className="text-muted">
-												Patrocinadores seleccionados:{" "}
-												<span className="fw-semibold text-dark">
-													{selectedPatrocinadores.length}
-												</span>
-											</p>
-											<hr />
+									<div className="mb-4">
+										<hr />
+										<div className="d-flex justify-content-between align-items-center mb-2">
+											<h5 className="mb-0 text-primary">Patrocinadores</h5>
+											<button
+												className="btn btn-primary d-flex align-items-center ml-1 px-4 py-2 rounded-pill shadow-sm"
+												onClick={() => setShowModal(true)}
+												type="button"
+											>
+												<i className="bi bi-plus-circle mr-2"></i>
+												Agregar Patrocinadores
+											</button>
 										</div>
+										<p className="text-muted">
+											Patrocinadores seleccionados:{" "}
+											<span className="fw-semibold text-dark">
+												{selectedPatrocinadores.length}
+											</span>
+										</p>
+										<hr />
 									</div>
+
 									<div className="mb-3">
 										<label className="form-label">
 											Ubicación (buscador de Google)
@@ -351,6 +361,30 @@ const CrearEvento = () => {
 										<div className="alert alert-info mt-3">{mensaje}</div>
 									)}
 								</form>
+							</div>
+						</div>
+					</div>
+
+					{/* Columna derecha - contenido adicional */}
+					<div className="col-md-6">
+						<div className="card mb-4 shadow">
+							<div className="card-header bg-secondary text-white">
+								<h4>Formulario adicional</h4>
+							</div>
+							<div className="card-body">
+								{/* Aquí puedes agregar más formularios u otros componentes */}
+								{formData.tipo === "cultural" && (
+									<ContenedorFormularioCultural id_evento={id_evento} />
+								)}
+								{formData.tipo === "gastronomico" && (
+									<ContenedorFormularioGastronomico id_evento={id_evento} />
+								)}
+								{formData.tipo === "academico" && (
+									<ContenedorFormularioAcademico id_evento={id_evento} />
+								)}
+								{formData.tipo === "deportivo" && (
+									<ContenedorFormularioDeportivo id_evento={id_evento} />
+								)}
 							</div>
 						</div>
 					</div>
