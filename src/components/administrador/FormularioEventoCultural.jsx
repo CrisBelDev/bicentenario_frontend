@@ -109,10 +109,6 @@ const FormularioEventoCultural = ({ formData, setFormData, onSubmit }) => {
 					theme="snow"
 				/>
 			</div>
-
-			<button type="submit" className="btn btn-success">
-				Registrar Evento
-			</button>
 		</form>
 	);
 };

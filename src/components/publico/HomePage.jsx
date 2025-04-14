@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import usuariosAxios from "../../config/axios";
 import { Link } from "react-router-dom"; // Importa Link desde react-router-dom
-
+import ChatN8N from "../agente/ChatN8N";
 const HomePage = () => {
 	const [eventos, setEventos] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -267,6 +267,7 @@ const HomePage = () => {
 						</div>
 					</div>
 				</section>
+				<ChatN8N />
 			</main>
 		</div>
 	);

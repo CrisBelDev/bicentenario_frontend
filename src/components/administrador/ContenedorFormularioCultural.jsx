@@ -6,13 +6,8 @@ import usuariosAxios from "../../config/axios";
 const ContenedorFormularioCultural = ({ id_evento }) => {
 	console.log("recibido XD: ", id_evento);
 	const [formDataCultural, setFormDataCultural] = useState({
-		titulo: "",
-		tipoEvento: "",
-		fechaInicio: "",
-		fechaFin: "",
-		lugar: "",
 		organizadoPor: "",
-		afichePromocional: null,
+
 		descripcion: "",
 	});
 
@@ -40,23 +35,12 @@ const ContenedorFormularioCultural = ({ id_evento }) => {
 
 		const formDataCulturalToSend = new FormData();
 		formDataCulturalToSend.append("id_evento", id_evento);
-		formDataCulturalToSend.append("titulo", formDataCultural.titulo);
-		formDataCulturalToSend.append("tipoEvento", formDataCultural.tipoEvento);
-		formDataCulturalToSend.append("fechaInicio", formDataCultural.fechaInicio);
-		formDataCulturalToSend.append("fechaFin", formDataCultural.fechaFin);
-		formDataCulturalToSend.append("lugar", formDataCultural.lugar);
+
 		formDataCulturalToSend.append(
 			"organizadoPor",
 			formDataCultural.organizadoPor
 		);
 		formDataCulturalToSend.append("descripcion", formDataCultural.descripcion);
-
-		if (formDataCultural.afichePromocional) {
-			formDataCulturalToSend.append(
-				"afichePromocional",
-				formDataCultural.afichePromocional
-			);
-		}
 
 		usuariosAxios
 			.post("/evento-cultural", formDataCulturalToSend, {
@@ -73,47 +57,12 @@ const ContenedorFormularioCultural = ({ id_evento }) => {
 	return (
 		<form onSubmit={handleSubmitCultural}>
 			<div className="mb-3">
-				<label className="form-label">Título del Evento</label>
-				<input
-					type="text"
-					className="form-control"
-					name="titulo"
-					value={formDataCultural.titulo}
-					onChange={handleChange}
-					required
-				/>
-			</div>
-
-			<div className="mb-3">
-				<label className="form-label">Tipo de Evento</label>
-				<input
-					type="text"
-					className="form-control"
-					name="tipoEvento"
-					value={formDataCultural.tipoEvento}
-					onChange={handleChange}
-					required
-				/>
-			</div>
-
-			<div className="mb-3">
 				<label className="form-label">Organizado por</label>
 				<input
 					type="text"
 					className="form-control"
 					name="organizadoPor"
 					value={formDataCultural.organizadoPor}
-					onChange={handleChange}
-					required
-				/>
-			</div>
-
-			<div className="mb-3">
-				<label className="form-label">Afiche Promocional</label>
-				<input
-					type="file"
-					className="form-control"
-					name="afichePromocional"
 					onChange={handleChange}
 					required
 				/>
