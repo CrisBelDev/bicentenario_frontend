@@ -54,12 +54,101 @@ const Eventos = () => {
 	const paginaSiguiente =
 		paginaActual < totalPaginas ? paginaActual + 1 : totalPaginas;
 
+	// Estado para la búsqueda
+	const [busqueda, setBusqueda] = useState("");
+	const [tipo, setTipo] = useState("");
+	const [modoBusqueda, setModoBusqueda] = useState(false); // activa/desactiva la paginación
+
+	const handleBuscar = async (e) => {
+		e.preventDefault();
+
+		// Si no se ingresa nada en el campo de búsqueda pero se seleccionó un tipo, solo se busca por tipo
+		const query = busqueda.trim() || ""; // Si hay algo en el campo, se mantiene, sino se pone vacío
+
+		try {
+			setLoading(true);
+
+			// Si hay búsqueda, buscamos por título y tipo, si solo hay tipo, solo lo usamos
+			const response = await usuariosAxios.get(
+				`/evento-buscar`,
+				{ params: { tipo, titulo: busqueda } } // Se envían tanto el tipo como el título como parámetros de consulta
+			);
+
+			const eventosConImagen = response.data.eventos.map((evento) => ({
+				...evento,
+				imagenes: evento.imagenes
+					? evento.imagenes.split(",").map((url) => url.trim())
+					: [],
+			}));
+
+			setEventos(eventosConImagen);
+			setError(null);
+		} catch (err) {
+			setEventos([]);
+			setError("No se encontraron eventos con esos criterios.");
+		} finally {
+			setLoading(false);
+		}
+
+		// Activar modo de búsqueda después de realizar la consulta
+		setModoBusqueda(true);
+	};
+
+	const limpiarBusqueda = () => {
+		setBusqueda("");
+		setTipo("");
+		setModoBusqueda(false);
+
+		window.location.reload(); // Recarga la página completamente
+	};
+
 	return (
 		<div className="index-page">
 			<main className="main">
 				<section id="eventos" className="py-5">
 					<div className="container">
 						<div className="borderline"></div>
+						<form onSubmit={handleBuscar} className="mb-4">
+							<div className="row g-2">
+								<div className="col-md-6">
+									<input
+										type="text"
+										className="form-control"
+										placeholder="Buscar por título"
+										value={busqueda}
+										onChange={(e) => setBusqueda(e.target.value)}
+									/>
+								</div>
+								<div className="col-md-4">
+									<select
+										className="form-select"
+										value={tipo}
+										onChange={(e) => setTipo(e.target.value)}
+									>
+										<option value="">Todos los tipos</option>
+										<option value="cultural">Cultural</option>
+										<option value="academico">Académico</option>
+										<option value="deportivo">Deportivo</option>
+										<option value="gastronomico">Gastronómico</option>
+									</select>
+								</div>
+								<div className="col-md-2 d-flex gap-2">
+									<button type="submit" className="btn btn-primary w-100">
+										Buscar
+									</button>
+									{modoBusqueda && (
+										<button
+											type="button"
+											className="btn btn-secondary"
+											onClick={limpiarBusqueda}
+										>
+											Limpiar
+										</button>
+									)}
+								</div>
+							</div>
+						</form>
+
 						<h2 className="fw-bold text-center mb-4">
 							Eventos del Bicentenario
 						</h2>
@@ -177,7 +266,7 @@ const Eventos = () => {
 							</div>
 						)}
 
-						{eventos.length > 0 && !loading && !error && (
+						{eventos.length > 0 && !loading && !error && !modoBusqueda && (
 							<div className="text-center mt-4">
 								<div className="d-flex justify-content-center">
 									<Link
