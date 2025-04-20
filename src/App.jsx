@@ -33,7 +33,8 @@ import DetalleEventoCultural from "./components/administrador/DetalleEventoCultu
 import ListarEventos from "./components/administrador/ListarEventos";
 import ListarEventoCultural from "./components/administrador/ListarEventoCultural";
 import EtniasCheckbox from "./components/administrador/EtniasCheckbox";
-import ContenedorFormulario from "./components/administrador/pruebas";
+import ContenedorFormulario from "./components/administrador/ContenedorFormularioCultural";
+import AsignarRoles from "./components/administrador/AsignarRoles";
 // Función para verificar si el token ha expirado
 // Función para verificar si el token ha expirado
 const isTokenExpired = (token) => {
@@ -231,6 +232,7 @@ const App = () => {
 						element={<ListarEventoCultural />}
 					/>
 					<Route path="prueba" element={<ContenedorFormulario />} />
+					<Route path="asignar-roles" element={<AsignarRoles />} />
 				</Route>
 
 				{/* Login exclusivo para administradores */}
