@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
+	const userRole = localStorage.getItem("userRole");
+
 	return (
 		<ul
 			className={`navbar-nav bg-gradient-primary sidebar sidebar-dark accordion ${
@@ -22,7 +24,7 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
 				</div>
 			</Link>
 
-			{/* Nav Item - Dashboard */}
+			{/* Dashboard (disponible para todos los roles) */}
 			<li className="nav-item active">
 				<Link className="nav-link" to=".">
 					<i className="fas fa-fw fa-tachometer-alt"></i>
@@ -30,38 +32,53 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }) => {
 				</Link>
 			</li>
 
-			{/* Nav Item - Listar Usuarios */}
-			<li className="nav-item">
-				<Link className="nav-link" to="listar-usuarios">
-					<i className="fas fa-fw fa-users"></i>
-					<span>Listar Usuarios</span>
-				</Link>
-			</li>
+			{/* Asignar roles (solo para administradores) */}
+			{userRole === "administrador" && (
+				<li className="nav-item">
+					<Link
+						className="nav-link d-flex align-items-center gap-2"
+						to="asignar-roles"
+					>
+						<i className="fas fa-users fa-fw"></i>
+						<span>Asignar roles</span>
+					</Link>
+				</li>
+			)}
 
-			{/* Nav Item - Crear Evento */}
+			{/* Listar Usuarios (administrador y cultural, por ejemplo) */}
+			{["administrador", "cultural"].includes(userRole) && (
+				<li className="nav-item">
+					<Link className="nav-link" to="listar-usuarios">
+						<i className="fas fa-fw fa-users"></i>
+						<span>Listar Usuarios</span>
+					</Link>
+				</li>
+			)}
+
+			{/* Crear Evento */}
 			<li className="nav-item">
-				<a className="nav-link" href="/bicentenario-dashboard/crear-evento">
+				<Link
+					className="nav-link"
+					to="#"
+					onClick={(e) => {
+						e.preventDefault();
+						window.location.href = "/bicentenario-dashboard/crear-evento";
+					}}
+				>
 					<i className="fas fa-fw fa-calendar-plus"></i>
 					<span>Crear Evento</span>
-				</a>
-			</li>
-
-			{/* Nav Item - Listar Evento */}
-			<li className="nav-item">
-				<Link className="nav-link" to="listar-eventos">
-					<i className="fas fa-fw fa-calendar-alt"></i>
-					<span>Lista de eventos</span>
-				</Link>
-			</li>
-			<li className="nav-item">
-				<Link className="nav-link" to="listar-eventos-cultural">
-					<i className="fas fa-fw fa-calendar-alt"></i>
-					<span>Lista de eventos culturales</span>
 				</Link>
 			</li>
 
-			{/* Otros enlaces de navegación */}
-			{/* Agregar más rutas aquí para otras secciones del dashboard */}
+			{/* Lista de eventos */}
+			{["administrador", "cultural"].includes(userRole) && (
+				<li className="nav-item">
+					<Link className="nav-link" to="listar-eventos">
+						<i className="fas fa-fw fa-calendar-alt"></i>
+						<span>Lista de eventos</span>
+					</Link>
+				</li>
+			)}
 		</ul>
 	);
 };

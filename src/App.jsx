@@ -66,8 +66,20 @@ const PrivateRoute = ({ element }) => {
 const AdminRoute = ({ element }) => {
 	const token = localStorage.getItem("tokenLogin");
 	const userRole = localStorage.getItem("userRole");
+	console.log("userRole", userRole);
+	if (token && userRole === "administrador" && !isTokenExpired(token)) {
+		return element;
+	} else {
+		return <Navigate to="/" />;
+	}
+};
 
-	if (token && userRole === "admin" && !isTokenExpired(token)) {
+// Componente que protege rutas según uno o varios roles permitidos
+const RoleRoute = ({ element, allowedRoles = [] }) => {
+	const token = localStorage.getItem("tokenLogin");
+	const userRole = localStorage.getItem("userRole");
+
+	if (token && !isTokenExpired(token) && allowedRoles.includes(userRole)) {
 		return element;
 	} else {
 		return <Navigate to="/" />;
@@ -217,22 +229,102 @@ const App = () => {
 				{/* Rutas del dashboard para administradores */}
 				<Route
 					path="/bicentenario-dashboard"
-					element={<AdminRoute element={<AdminDashboard />} />}
+					element={
+						<RoleRoute
+							element={<AdminDashboard />}
+							allowedRoles={[
+								"administrador",
+								"cultural",
+								"academico",
+								"deportivo",
+								"gastronomico",
+							]}
+						/>
+					}
 				>
-					<Route path="listar-usuarios" element={<ListarUsuarios />} />
-					<Route path="crear-evento" element={<CrearEvento />} />
-					<Route path="detalle-evento/:id" element={<DetalleEvento />} />
+					<Route
+						path="listar-usuarios"
+						element={
+							<RoleRoute
+								element={<ListarUsuarios />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
+					/>
+					<Route
+						path="crear-evento"
+						element={
+							<RoleRoute
+								element={<CrearEvento />}
+								allowedRoles={[
+									"administrador",
+									"cultural",
+									"academico",
+									"deportivo",
+									"gastronomico",
+								]}
+							/>
+						}
+					/>
+					<Route
+						path="detalle-evento/:id"
+						element={
+							<RoleRoute
+								element={<DetalleEvento />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
+					/>
+
 					<Route
 						path="detalle-evento-cultural/:id"
-						element={<DetalleEventoCultural />}
+						element={
+							<RoleRoute
+								element={<DetalleEventoCultural />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
 					/>
-					<Route path="listar-eventos" element={<ListarEventos />} />
+
+					<Route
+						path="listar-eventos"
+						element={
+							<RoleRoute
+								element={<ListarEventos />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
+					/>
+
 					<Route
 						path="listar-eventos-cultural"
-						element={<ListarEventoCultural />}
+						element={
+							<RoleRoute
+								element={<ListarEventoCultural />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
 					/>
-					<Route path="prueba" element={<ContenedorFormulario />} />
-					<Route path="asignar-roles" element={<AsignarRoles />} />
+
+					<Route
+						path="prueba"
+						element={
+							<RoleRoute
+								element={<ContenedorFormulario />}
+								allowedRoles={["administrador", "cultural"]}
+							/>
+						}
+					/>
+
+					<Route
+						path="asignar-roles"
+						element={
+							<RoleRoute
+								element={<AsignarRoles />}
+								allowedRoles={["administrador"]}
+							/>
+						}
+					/>
 				</Route>
 
 				{/* Login exclusivo para administradores */}

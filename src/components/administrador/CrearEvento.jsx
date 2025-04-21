@@ -19,6 +19,8 @@ import ContenedorFormularioGastronomico from "./ContenedorFormularioGastronomico
 import ContenedorFormularioAcademico from "./ContenedorFormularioAcademico";
 import ContenedorFormularioDeportivo from "./ContenedorFormularioDeportivo ";
 //---------------------------------
+const rol = localStorage.getItem("userRole");
+
 const containerStyle = {
 	width: "100%",
 	height: "400px",
@@ -60,7 +62,10 @@ const CrearEvento = () => {
 
 	useEffect(() => {
 		if (!token) navigate("/");
-	}, [token, navigate]);
+		if (rol !== "administrador") {
+			setFormData((prev) => ({ ...prev, tipo: rol }));
+		}
+	}, [token, navigate, rol]);
 
 	// Usamos el cargador para cargar la API de Google Maps y la biblioteca "places" de forma dinámica
 	const { isLoaded } = useJsApiLoader({
@@ -145,21 +150,15 @@ const CrearEvento = () => {
 			setIdEvento(res.data.evento.id_evento);
 
 			if (res.status === 201 && res.data && res.data.evento) {
-				const { isConfirmed } = await Swal.fire({
+				await Swal.fire({
 					title: "¡Evento creado!",
-					text: "¿Quieres continuar con el siguiente paso?",
+					text: "Tu evento ha sido creado exitosamente.",
 					icon: "success",
-					showCancelButton: true,
-					confirmButtonText: "Sí",
-					cancelButtonText: "No",
+					confirmButtonText: "Aceptar",
 				});
 
-				if (isConfirmed) {
-					navigate(
-						`/bicentenario-dashboard/detalle-evento/${res.data.evento.id_evento}`
-					);
-				}
-
+				// Forzar recarga a la ruta deseada
+				window.location.href = "/bicentenario-dashboard/crear-evento";
 				setFormData({
 					titulo: "",
 					descripcion: "",
@@ -209,18 +208,31 @@ const CrearEvento = () => {
 									</div>
 									<div className="mb-3">
 										<label className="form-label">Tipo de Evento</label>
-										<select
-											className="form-control"
-											name="tipo"
-											value={formData.tipo}
-											onChange={handleChange}
-										>
-											<option value="">Seleccione el tipo de evento</option>
-											<option value="academico">Académico</option>
-											<option value="cultural">Cultural</option>
-											<option value="deportivo">Deportivo</option>
-											<option value="gastronomico">Gastronomico</option>
-										</select>
+										{rol === "administrador" ? (
+											<select
+												className="form-control"
+												name="tipo"
+												value={formData.tipo || ""}
+												onChange={handleChange}
+											>
+												<option value="">Seleccione el tipo de evento</option>
+												<option value="academico">Académico</option>
+												<option value="cultural">Cultural</option>
+												<option value="deportivo">Deportivo</option>
+												<option value="gastronomico">Gastronómico</option>
+											</select>
+										) : (
+											<select
+												className="form-control"
+												name="tipo"
+												value={formData.tipo || rol} // toma el valor del rol si no hay nada en formData.tipo
+												readOnly // para que no se pueda cambiar
+											>
+												<option value={rol}>
+													{rol.charAt(0).toUpperCase() + rol.slice(1)}
+												</option>
+											</select>
+										)}
 									</div>
 
 									<div className="mb-3">

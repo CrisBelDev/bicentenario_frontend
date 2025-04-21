@@ -22,7 +22,8 @@ const LoginAdmin = () => {
 			// Si la autenticación es exitosa, almacenamos el token y el rol
 			if (response.data.token) {
 				localStorage.setItem("tokenLogin", response.data.token);
-				localStorage.setItem("userRole", "admin");
+				console.log("tokenLogin", response.data);
+				localStorage.setItem("userRole", response.data.rol);
 				localStorage.setItem("nombre", response.data.nombre);
 				localStorage.setItem("apellido", response.data.apellido);
 
