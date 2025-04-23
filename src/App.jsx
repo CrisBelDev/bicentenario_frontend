@@ -36,7 +36,9 @@ import EtniasCheckbox from "./components/administrador/EtniasCheckbox";
 import ContenedorFormulario from "./components/administrador/ContenedorFormularioCultural";
 import AsignarRoles from "./components/administrador/AsignarRoles";
 // Función para verificar si el token ha expirado
-// Función para verificar si el token ha expirado
+// importaando la agenda
+import Agenda from "./components/agenda/Agenda";
+
 const isTokenExpired = (token) => {
 	try {
 		const decoded = jwtDecode(token);
@@ -181,6 +183,16 @@ const App = () => {
 						</>
 					}
 				/>
+				<Route
+					path="/agenda"
+					element={
+						<>
+							<PublicNav />
+							<Agenda />
+						</>
+					}
+				/>
+
 				<Route
 					path="/registro"
 					element={

@@ -60,8 +60,8 @@ const PublicNav = () => {
 									<Nav.Link as={Link} to="/eventos">
 										Eventos
 									</Nav.Link>
-									<Nav.Link as={Link} to="#services">
-										Services
+									<Nav.Link as={Link} to="/agenda">
+										Agenda
 									</Nav.Link>
 									<Nav.Link as={Link} to="#portfolio">
 										Portfolio
