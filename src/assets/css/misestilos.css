@@ -226,7 +226,19 @@ h2 {
 	width: 100vw;
 	position: relative;
 }
-
+.fondo {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("/img/home.png"); /* Cambia por tu imagen */
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	z-index: -1; /* Muy importante para que quede detrás del contenido */
+	opacity: 0.7; /* Opcional: para hacerlo sutil */
+}
 .titulo_evento h2,
 .titulo_evento h4 {
 	color: rgb(255, 204, 1); /* Color de texto dorado */
@@ -254,4 +266,14 @@ h2 {
 .fondo_eventos > * {
 	position: relative;
 	z-index: 2;
+}
+
+/* src/styles/agenda.css */
+.today-cell-highlight {
+	background-color: #3bff55 !important; /* Resaltar el día de hoy con un color amarillo */
+	color: black; /* Texto oscuro */
+}
+
+.agenda-container .fc {
+	background-color: rgb(235, 231, 231);
 }
