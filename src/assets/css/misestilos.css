@@ -237,7 +237,7 @@ h2 {
 	background-position: center;
 	background-repeat: no-repeat;
 	z-index: -1; /* Muy importante para que quede detrás del contenido */
-	opacity: 0.7; /* Opcional: para hacerlo sutil */
+	opacity: 0.8; /* Opcional: para hacerlo sutil */
 }
 .titulo_evento h2,
 .titulo_evento h4 {

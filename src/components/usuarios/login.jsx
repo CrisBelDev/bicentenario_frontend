@@ -8,9 +8,7 @@ function Login() {
 	const navigate = useNavigate();
 	const [usuario, guardarUsuario] = useState({ correo: "", password: "" });
 	const [captchaValue, setCaptchaValue] = useState(null);
-	const [mostrarPassword, setMostrarPassword] = useState(false); // Estado para ver la contraseña
-
-	// Estados de error individuales
+	const [mostrarPassword, setMostrarPassword] = useState(false);
 	const [errorCorreo, setErrorCorreo] = useState("");
 	const [errorPassword, setErrorPassword] = useState("");
 	const [errorCaptcha, setErrorCaptcha] = useState("");
@@ -18,8 +16,6 @@ function Login() {
 
 	const actualizarState = (e) => {
 		guardarUsuario({ ...usuario, [e.target.name]: e.target.value });
-
-		// Limpiar errores al escribir
 		if (e.target.name === "correo") setErrorCorreo("");
 		if (e.target.name === "password") setErrorPassword("");
 		setErrorGeneral("");
@@ -34,26 +30,19 @@ function Login() {
 		e.preventDefault();
 
 		let errores = false;
-
 		if (!usuario.correo.trim()) {
 			setErrorCorreo("El correo es obligatorio.");
 			errores = true;
 		}
-
 		if (!usuario.password.trim()) {
 			setErrorPassword("La contraseña es obligatoria.");
 			errores = true;
 		}
-
 		if (!captchaValue) {
 			setErrorCaptcha("Por favor completa el CAPTCHA.");
 			errores = true;
 		}
-
-		if (errores) {
-			setErrorGeneral("");
-			return;
-		}
+		if (errores) return;
 
 		try {
 			const respuesta = await usuariosAxios.post("/login", {
@@ -61,159 +50,134 @@ function Login() {
 				password: usuario.password,
 				captcha: captchaValue,
 			});
-			// ========================= para crear la sesion========================
-			// Si el login es exitoso, almacenar el token y los datos en localStorage
-			if (respuesta.data.token) {
-				localStorage.setItem("tokenLogin", respuesta.data.token);
-				localStorage.setItem("nombre", respuesta.data.nombre);
-				localStorage.setItem("apellido", respuesta.data.apellido);
 
-				// Disparar un evento personalizado para actualizar PublicNav
+			const { token, nombre, apellido, rol, idUsuario } = respuesta.data;
+
+			if (token) {
+				localStorage.setItem("tokenLogin", token);
+				localStorage.setItem("nombre", nombre);
+				localStorage.setItem("apellido", apellido);
+				localStorage.setItem("idUsuario", idUsuario);
+				if (rol) {
+					localStorage.setItem("userRole", rol);
+				}
+
+				// Redirección condicional según rol (si es admin, dashboard)
+				if (
+					rol === "administrador" ||
+					rol === "cultural" ||
+					rol === "academico" ||
+					rol === "deportivo" ||
+					rol === "gastronomico"
+				) {
+					window.location.href = "/bicentenario-dashboard";
+				} else {
+					navigate("/");
+				}
+
+				// Notifica actualización
 				window.dispatchEvent(new Event("storage"));
-
-				navigate("/"); // Redirigir a la página de inicio
 			}
-			// =======================================================================
 		} catch (error) {
-			console.log(error.response.data);
-
-			// Si la cuenta no está verificada
 			if (error.response?.data?.verificado === false) {
-				setErrorGeneral(
-					"Tu cuenta no está verificada. Por favor, verifica tu cuenta."
-				);
+				setErrorGeneral("Tu cuenta no está verificada.");
 				navigate("/confirmarcuenta");
-				return; // Detener la ejecución posterior
-			}
-
-			// Si la contraseña es incorrecta
-			if (error.response?.data?.message === "Contraseña incorrecta") {
-				setErrorGeneral(
-					"La contraseña ingresada es incorrecta. Intenta nuevamente."
-				);
 			} else {
-				setErrorGeneral("Acceso inválido. Por favor, inténtelo otra vez.");
+				setErrorGeneral(error.response?.data?.mensaje || "Acceso inválido.");
 			}
 		}
 	};
 
 	return (
-		<div className="container mt-5">
-			<div className="row justify-content-center mb-2">
-				<div className="col-md-5">
-					<div className="card shadow-lg">
-						<div className="card-body">
-							<h2 className="text-center mb-4">Iniciar Sesión</h2>
-							<form onSubmit={iniciarSesion} noValidate>
-								<div className="mb-3">
-									<label className="form-label">Correo electrónico</label>
-									<input
-										type="email"
-										name="correo"
-										className="form-control"
-										placeholder="Ingresa tu correo"
-										value={usuario.correo}
-										onChange={actualizarState}
-										autoComplete="username"
-										required
-									/>
-									{errorCorreo && (
-										<div className="text-danger">{errorCorreo}</div>
-									)}
-								</div>
-
-								<div className="mb-3">
-									<label className="form-label">Contraseña</label>
-									<div className="input-group">
+		<>
+			<div className="fondo"></div>
+			<div className="container mt-5">
+				<div className="row justify-content-center mb-2">
+					<div className="col-md-5">
+						<div className="card shadow-lg">
+							<div className="card-body">
+								<h2 className="text-center mb-4">Iniciar Sesión</h2>
+								<form onSubmit={iniciarSesion} noValidate>
+									<div className="mb-3">
+										<label className="form-label">Correo electrónico</label>
 										<input
-											type={mostrarPassword ? "text" : "password"}
-											name="password"
+											type="email"
+											name="correo"
 											className="form-control"
-											placeholder="Ingresa tu contraseña"
-											value={usuario.password}
+											placeholder="Ingresa tu correo"
+											value={usuario.correo}
 											onChange={actualizarState}
-											autoComplete="current-password"
-											required
+											autoComplete="username"
 										/>
-										<button
-											type="button"
-											className="btn btn-outline-secondary"
-											onClick={() => setMostrarPassword(!mostrarPassword)}
-										>
-											{mostrarPassword ? (
-												<i className="fas fa-eye-slash"></i>
-											) : (
-												<i className="fas fa-eye"></i>
-											)}
+										{errorCorreo && (
+											<div className="text-danger">{errorCorreo}</div>
+										)}
+									</div>
+
+									<div className="mb-3">
+										<label className="form-label">Contraseña</label>
+										<div className="input-group">
+											<input
+												type={mostrarPassword ? "text" : "password"}
+												name="password"
+												className="form-control"
+												placeholder="Ingresa tu contraseña"
+												value={usuario.password}
+												onChange={actualizarState}
+												autoComplete="current-password"
+											/>
+											<button
+												type="button"
+												className="btn btn-outline-secondary"
+												onClick={() => setMostrarPassword(!mostrarPassword)}
+											>
+												{mostrarPassword ? (
+													<i className="fas fa-eye-slash"></i>
+												) : (
+													<i className="fas fa-eye"></i>
+												)}
+											</button>
+										</div>
+										{errorPassword && (
+											<div className="text-danger">{errorPassword}</div>
+										)}
+									</div>
+
+									<div className="mb-3">
+										<ReCAPTCHA
+											sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+											onChange={handleCaptchaChange}
+										/>
+										{errorCaptcha && (
+											<div className="text-danger">{errorCaptcha}</div>
+										)}
+									</div>
+
+									{errorGeneral && (
+										<div className="alert alert-danger">{errorGeneral}</div>
+									)}
+
+									<div className="d-grid">
+										<button type="submit" className="btn btn-primary">
+											Iniciar Sesión
 										</button>
 									</div>
-									{errorPassword && (
-										<div className="text-danger">{errorPassword}</div>
-									)}
+								</form>
+
+								<hr />
+								<div className="text-center">
+									<p>
+										¿No tienes una cuenta?{" "}
+										<Link to="/registro">Regístrate</Link>
+									</p>
 								</div>
-
-								<div className="mb-3 form-check">
-									<input
-										type="checkbox"
-										className="form-check-input border border-dark"
-										id="remember"
-									/>
-									<label className="form-check-label" htmlFor="remember">
-										Recordarme
-									</label>
-									<Link to="/recuperar-password" className="float-end">
-										¿Olvidaste tu contraseña?
-									</Link>
-								</div>
-
-								<div className="mb-3">
-									<ReCAPTCHA
-										sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-										onChange={handleCaptchaChange}
-									/>
-									{errorCaptcha && (
-										<div className="text-danger">{errorCaptcha}</div>
-									)}
-								</div>
-
-								{errorGeneral && (
-									<div className="alert alert-danger">{errorGeneral}</div>
-								)}
-
-								<div className="d-grid">
-									<button type="submit" className="btn btn-primary">
-										Iniciar Sesión
-									</button>
-								</div>
-							</form>
-
-							<hr />
-
-							<div className="text-center">
-								<p>
-									¿No tienes una cuenta?{" "}
-									<Link to="/registro">Regístrate ahora</Link>
-								</p>
-							</div>
-							<div className="mt-3 text-center">
-								<p>O inicia sesión con:</p>
-								<div className="d-flex justify-content-center gap-2">
-									<button className="btn btn-info">
-										<i className="fab fa-twitter"></i> Twitter
-									</button>
-									<button className="btn btn-primary">
-										<i className="fab fa-facebook"></i> Facebook
-									</button>
-									<button className="btn btn-danger">
-										<i className="fab fa-google"></i> Google
-									</button>
-								</div>
+								{/* Aquí podrías condicionar mostrar estas redes solo a usuarios comunes */}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 
