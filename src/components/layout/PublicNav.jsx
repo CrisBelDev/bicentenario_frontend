@@ -1,18 +1,19 @@
 import { Navbar, Nav, Container, Dropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import "font-awesome/css/font-awesome.min.css"; // Asegúrate de importar los estilos de Font Awesome
+import "font-awesome/css/font-awesome.min.css";
 
 const PublicNav = () => {
 	const navigate = useNavigate();
 	const [usuario, setUsuario] = useState(
 		localStorage.getItem("nombre") || null
 	);
+	const [rol, setRol] = useState(localStorage.getItem("userRole") || null);
 
 	useEffect(() => {
-		// Detectar cambios en el localStorage cuando el usuario inicia/cierra sesión
 		const handleStorageChange = () => {
 			setUsuario(localStorage.getItem("nombre"));
+			setRol(localStorage.getItem("userRole"));
 		};
 
 		window.addEventListener("storage", handleStorageChange);
@@ -26,7 +27,9 @@ const PublicNav = () => {
 		localStorage.removeItem("tokenLogin");
 		localStorage.removeItem("nombre");
 		localStorage.removeItem("apellido");
-		setUsuario(null); // Actualizar estado para ocultar el perfil
+		localStorage.removeItem("userRole");
+		setUsuario(null);
+		setRol(null);
 		navigate("/login");
 	};
 
@@ -34,23 +37,21 @@ const PublicNav = () => {
 		<>
 			<header
 				id="header"
-				className="header d-flex align-items-center sticky-top color-menu "
+				className="header d-flex align-items-center sticky-top color-menu"
 			>
-				<div className="container-fluid container-xl position-relative d-flex align-items-center ">
-					{/* Logo */}
+				<div className="container-fluid container-xl position-relative d-flex align-items-center">
 					<Navbar.Brand
 						as={Link}
 						to="/"
-						className=" d-flex align-items-center me-auto"
+						className="d-flex align-items-center me-auto"
 					>
 						<h1 className="sitename">Bicentenario</h1>
 					</Navbar.Brand>
 
-					{/* Menú de navegación */}
 					<Navbar bg="" variant="" expand="lg">
 						<Container>
 							<Navbar.Toggle aria-controls="navbarResponsive">
-								<i className="fa fa-bars"></i> {/* Cambia el ícono aquí */}
+								<i className="fa fa-bars"></i>
 							</Navbar.Toggle>
 							<Navbar.Collapse id="navbarResponsive">
 								<Nav className="ms-auto">
@@ -73,7 +74,6 @@ const PublicNav = () => {
 										Contact
 									</Nav.Link>
 
-									{/* Si el usuario NO está autenticado, mostrar "Registrarse" y "Iniciar Sesión" */}
 									{!usuario ? (
 										<>
 											<Nav.Link as={Link} to="/registro">
@@ -86,15 +86,25 @@ const PublicNav = () => {
 									) : (
 										<Dropdown align="end">
 											<Dropdown.Toggle variant="warning" id="dropdown-perfil">
-												<i className="fas fa-user-circle "></i> {usuario}
+												<i className="fas fa-user-circle"></i> {usuario}
 											</Dropdown.Toggle>
-											<Dropdown.Menu>
-												<Dropdown.Item as={Link} to="/perfil">
-													Mi Perfil
-												</Dropdown.Item>
-												<Dropdown.Item as={Link} to="/configuracion">
+
+											<Dropdown.Menu className="mt-4">
+												{rol === "normal" || !rol ? (
+													<a href="/perfil" className="dropdown-item">
+														Mi Perfil
+													</a>
+												) : (
+													<a
+														href="/bicentenario-dashboard"
+														className="dropdown-item"
+													>
+														Bicentenario Dashboard
+													</a>
+												)}
+												<a href="/configuracion" className="dropdown-item">
 													Configuración
-												</Dropdown.Item>
+												</a>
 												<Dropdown.Divider />
 												<Dropdown.Item onClick={cerrarSesion}>
 													Cerrar Sesión
@@ -108,7 +118,7 @@ const PublicNav = () => {
 					</Navbar>
 				</div>
 			</header>
-			<div className=" navbar-border"></div>
+			<div className="navbar-border"></div>
 		</>
 	);
 };
