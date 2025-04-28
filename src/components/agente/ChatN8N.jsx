@@ -7,13 +7,14 @@ const ChatN8N = () => {
 	useEffect(() => {
 		createChat({
 			webhookUrl:
-				"https://criscoders.app.n8n.cloud/webhook/1756b34b-5de0-4ad2-a5b0-a3f32e5d15bb/chat", // reemplaza por tu webhook real
-			mode: "embedded", // o 'embedded' si quieres que aparezca dentro de un div
+				"https://criscoders1.app.n8n.cloud/webhook/1756b34b-5de0-4ad2-a5b0-a3f32e5d15bb/chat",
+			mode: "embedded",
 			initialMessages: [
 				"¡Hola! 👋",
 				"Soy tu asistente, ¿en qué puedo ayudarte hoy?",
 			],
 			defaultLanguage: "es",
+			newSessionOnMessage: true, // << AÑADIDO para nueva sesión tras respuesta
 			i18n: {
 				es: {
 					title: "¡Hola! 👋",
@@ -25,7 +26,7 @@ const ChatN8N = () => {
 		});
 	}, []);
 
-	return null; // No necesitas renderizar nada si usas modo "window"
+	return null;
 };
 
 export default ChatN8N;
