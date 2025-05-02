@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import usuariosAxios from "../../../config/axios"; // Esto es correcto si hay exportación por defecto
+import usuariosAxios from "../../../config/axios";
 
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import makeAnimated from "react-select/animated";
 
 const animatedComponents = makeAnimated();
@@ -34,6 +34,10 @@ const ModalPatrocinadores = ({
 		);
 		if (selectedPatrocinadores.length > 0) {
 			try {
+				console.log(
+					"Guardando patrocinadores:",
+					selectedPatrocinadores.map((patro) => patro.value)
+				);
 				await usuariosAxios.post("/patrocinadores", {
 					patrocinadores: selectedPatrocinadores.map((patro) => patro.value),
 				});
@@ -49,17 +53,35 @@ const ModalPatrocinadores = ({
 	};
 
 	const patrocinadoresOptions = patrocinadores.map((patro) => ({
-		value: patro.id_patrocinador, // Usamos 'id_patrocinador' como 'value'
-		label: patro.nombre, // 'nombre' como 'label'
+		value: patro.id_patrocinador,
+		label: patro.nombre,
 	}));
 
-	useEffect(() => {
-		console.log("Opciones para Select:", patrocinadoresOptions);
-	}, [patrocinadores]);
+	const handleCreatePatrocinador = async (inputValue) => {
+		try {
+			// Crear el nuevo patrocinador
+			const response = await usuariosAxios.post("/patrocinadores", {
+				nombre: inputValue,
+			});
+
+			const nuevo = response.data; // Esperamos que contenga { id_patrocinador, nombre }
+
+			const newOption = {
+				value: nuevo.id_patrocinador,
+				label: nuevo.nombre,
+			};
+
+			// Agregar a la lista y seleccionar
+			setPatrocinadores([...patrocinadores, nuevo]);
+			setSelectedPatrocinadores([...selectedPatrocinadores, newOption]);
+		} catch (error) {
+			console.error("Error al crear nuevo patrocinador:", error);
+			alert("No se pudo crear el patrocinador.");
+		}
+	};
 
 	useEffect(() => {
-		console.log("Patrocinadores seleccionados:", selectedPatrocinadores);
-		onSelectPatrocinadores(selectedPatrocinadores); // Pasamos el valor al componente padre
+		onSelectPatrocinadores(selectedPatrocinadores);
 	}, [selectedPatrocinadores, onSelectPatrocinadores]);
 
 	return (
@@ -78,17 +100,17 @@ const ModalPatrocinadores = ({
 									></button>
 								</div>
 								<div className="modal-body">
-									<Select
+									<CreatableSelect
 										closeMenuOnSelect={false}
 										components={animatedComponents}
 										isMulti
 										options={patrocinadoresOptions}
 										value={selectedPatrocinadores}
 										onChange={(selectedOptions) => {
-											console.log("Cambio en el Select:", selectedOptions);
 											setSelectedPatrocinadores(selectedOptions || []);
 										}}
-										placeholder="Busca y selecciona patrocinadores"
+										onCreateOption={handleCreatePatrocinador}
+										placeholder="Busca o crea patrocinadores"
 									/>
 								</div>
 								<div className="modal-footer">
@@ -107,7 +129,7 @@ const ModalPatrocinadores = ({
 					</div>
 
 					<div
-						className=" modal-backdrop fade show "
+						className="modal-backdrop fade show"
 						onClick={() => setShowModal(false)}
 					></div>
 				</>
