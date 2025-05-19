@@ -35,6 +35,7 @@ import ListarEventoCultural from "./components/administrador/ListarEventoCultura
 import EtniasCheckbox from "./components/administrador/EtniasCheckbox";
 import ContenedorFormulario from "./components/administrador/ContenedorFormularioCultural";
 import AsignarRoles from "./components/administrador/AsignarRoles";
+import Home from "./components/administrador/Home";
 // Función para verificar si el token ha expirado
 // importaando la agenda
 import Agenda from "./components/agenda/Agenda";
@@ -254,6 +255,7 @@ const App = () => {
 						/>
 					}
 				>
+					<Route index element={<Home />} />
 					<Route
 						path="listar-usuarios"
 						element={
