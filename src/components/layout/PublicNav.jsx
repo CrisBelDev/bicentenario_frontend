@@ -112,15 +112,6 @@ const PublicNav = () => {
 									<Nav.Link as={Link} to="/agenda">
 										Agenda
 									</Nav.Link>
-									<Nav.Link as={Link} to="#portfolio">
-										Portfolio
-									</Nav.Link>
-									<Nav.Link as={Link} to="#team">
-										Team
-									</Nav.Link>
-									<Nav.Link as={Link} to="#contact">
-										Contact
-									</Nav.Link>
 
 									{usuario && (
 										<Dropdown align="end" className="me-3">

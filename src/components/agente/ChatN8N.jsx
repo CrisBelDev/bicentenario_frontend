@@ -7,7 +7,7 @@ const ChatN8N = () => {
 	useEffect(() => {
 		createChat({
 			webhookUrl:
-				"https://criscoders1.app.n8n.cloud/webhook/1756b34b-5de0-4ad2-a5b0-a3f32e5d15bb/chat",
+				"https://criscoders2.app.n8n.cloud/webhook/1756b34b-5de0-4ad2-a5b0-a3f32e5d15bb/chat",
 			mode: "embedded",
 			initialMessages: [
 				"¡Hola! 👋",
